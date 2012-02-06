@@ -1,0 +1,43 @@
+
+
+<script defer="defer" type="text/javascript"> 
+/*
+ * optionalParameters : le tableau "optionalParameters peut être déclaré dans le js devant contenir la carte
+ */	
+	var strSep = "";
+	if(!('${base_url}'.match("/$")) && !('${view.jsFile}'.match("^/")))
+		strSep = "/";
+	$LAB
+		.script("${base_url}"+strSep+"${view.jsFile}").wait()
+		.wait(function(){ 
+			if($.trim($("#${map_name}").html()=="")){ 
+				var parameters = new Array();
+				<#list view.parameters?keys as prop>
+						parameters['${prop}'] = "${view.getParameter(prop)}";
+				</#list>  
+				var optionalParameters = $("#${map_name}").data('optionalParameters');
+	
+				if (typeof optionalParameters != "undefined") {
+					//on peuple le tableau parameters avec les valeurs du tableau optionalParameters
+					
+					$.each(optionalParameters, function(key, value) {
+						parameters[key]=value;	 
+					}); 
+				}
+				strSep = "";
+				if(!('${base_url}'.match("/$")))
+					strSep = "/";
+				var globalParameters = {};
+				globalParameters['appProdUrl'] = "${base_url}" + strSep;
+				globalParameters['serverName'] = "${view.serverName}";
+				globalParameters['featureNS'] = "${view.featureNS}";
+				globalParameters['templateFile'] = "${view.templateFile}";
+				globalParameters['availableParameters'] = "${view.availableParameters}";
+				globalParameters['availableParametersLayers'] = "${view.availableParametersLayers}";
+				globalParameters['availableParametersStyles'] = "${view.availableParametersStyles}";
+				globalParameters['availableParametersStyleRules'] = "${view.availableParametersStyleRules}";
+				init_carto("#${map_name}", globalParameters, parameters);
+			}
+		}); 
+</script> 
+ 
