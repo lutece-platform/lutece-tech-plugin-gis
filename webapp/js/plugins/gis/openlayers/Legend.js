@@ -236,7 +236,7 @@ OpenLayers.Control.Legend =
 				
     redraw: function() {
 	
-		var renderers = ['SVG', 'VML', 'Canvas'];
+		var renderers = ['Canvas', 'SVG', 'VML'];
 		//create the geometries
 		var pointFeature = new OpenLayers.Feature.Vector(
 			new OpenLayers.Geometry.Point(10, 10));
@@ -291,7 +291,7 @@ OpenLayers.Control.Legend =
             var baseLayer = layer.isBaseLayer;
 
         
-            if (!baseLayer && layer.displayInLegend) {
+            if (!baseLayer && layer.displayInLegend && layer.visibility) {
 				
 				if (layer.geometryType){
 					switch(layer.geometryType){
@@ -363,7 +363,7 @@ OpenLayers.Control.Legend =
 
 				for (var j = 0, rlen = renderers.length; j < rlen; j++) {
 					var rendererClass = OpenLayers.Renderer[renderers[j]];
-					if (rendererClass && rendererClass.prototype.supported()) {
+					if (rendererClass && rendererClass.prototype.supported()) { 
 					 var rendererIcon = new rendererClass(legendDiv, null);
 					 break;
 					}
