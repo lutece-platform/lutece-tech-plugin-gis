@@ -113,8 +113,6 @@
 		if ($("#"+idMap).attr('class').contains("olMap")){ 
 			return false;
 		}
-		
-    	var server = globalParameters['serverName']+parameters['wms'];
     	OpenLayers.ProxyHost = globalParameters['appProdUrl'] + "proxyGeoServer?url=";
     	//--------------------------------------
     	OpenLayers.IMAGE_RELOAD_ATTEMPTS = 5;
@@ -161,9 +159,18 @@
 					
 					parameters[layersNames[index] + '.filter'] = getOGCFilter(parameters[layersNames[index] + '.ogcFilter']);
 				}
-			
-				if (parameters[layersNames[index] + '.type'] == 'wms') {
 				
+				//Get server name either from layer or global properties
+				var server = '';
+				if (parameters[layersNames[index] + '.serverName'] != undefined
+					&& parameters[layersNames[index] + '.serverName'] != '' ){
+					server = parameters[layersNames[index] + '.serverName'];
+				}else{
+					server = globalParameters['serverName'];
+				}
+				if (parameters[layersNames[index] + '.type'] == 'wms') {
+					
+					server = server + parameters['wms'];
 					//An object with key/value pairs representing the GetMap query string parameters and parameter values
 					var htParameters = {};
 					htParameters['layers'] = parameters[layersNames[index] + '.layer'];
@@ -191,20 +198,56 @@
 					// Display in Legend
 					htOptions['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
 					
+					// GetLegendGraphic 
+					if(htOptions['displayInLegend'] && !htParameters['isBaseLayer'] ){
+						htOptions['styleMap'] = new OpenLayers.StyleMap();
+						var layer;
+						if(parameters[layersNames[index] + '.legendGraphicLayer'] != undefined 
+						&&parameters[layersNames[index] + '.legendGraphicLayer'] !=''){
+							layer = parameters[layersNames[index] + '.legendGraphicLayer'];
+						}else{
+							layer = parameters[layersNames[index] + '.layer'];
+						}
+
+						var legendGraphicWidth = parameters[layersNames[index] + '.legendGraphicWidth'];
+						var width   = (legendGraphicWidth != undefined && legendGraphicWidth!='')?legendGraphicWidth:"20";
+
+						var legendGraphicHeight = parameters[layersNames[index] + '.legendGraphicHeight'];
+						var height   = (legendGraphicHeight != undefined && legendGraphicHeight!='')?legendGraphicHeight:"20";	
+
+						var legendGraphicURI = server+'?SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH='+width+'&HEIGHT='+height+'&LAYER='+layer;
+						if((parameters[layersNames[index] + '.legendGraphicStyle'] != undefined 
+						&&parameters[layersNames[index] + '.legendGraphicStyle'] !='')){
+							legendGraphicURI+='&STYLE='+parameters[layersNames[index] + '.legendGraphicStyle'];
+						}
+						htOptions['legendGraphicURI'] = legendGraphicURI;					
+					}
+					
 					// Create the new WMS Layer
 					layers[index] = new OpenLayers.Layer.WMS(parameters[layersNames[index] + '.name'], server, htParameters, htOptions);
 				}
 				if (parameters[layersNames[index] + '.type'] == 'wfs') {
-				
+					
+					server = server + parameters['wfs'];
+					
+					//Get feature namespace either from layer or global properties
+					var featureNS = '';
+					if (parameters[layersNames[index] + '.featureNS'] != undefined
+						&& parameters[layersNames[index] + '.featureNS'] != '' ){
+						featureNS = parameters[layersNames[index] + '.featureNS'];
+					}else{
+						featureNS = globalParameters['featureNS'];
+					}
+					
 					// allow testing of specific renderers via "?renderer=Canvas", etc
 					var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
 					renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
 					
 					var htParameters = {};
 					var htParametersProtocol = {};
-					htParametersProtocol['url'] = globalParameters['serverName'] + parameters['wfs'];
+					htParametersProtocol['url'] = server;
 					htParametersProtocol['featureType'] = parameters[layersNames[index] + '.featureType'];
-					htParametersProtocol['featureNS'] = globalParameters['featureNS'];
+					htParametersProtocol['featureNS'] = featureNS;
 					if (parameters[layersNames[index] + '.cqlFilter'] != '') 
 						htParametersProtocol['params'] = {
 							CQL_FILTER: parameters[layersNames[index] + '.cqlFilter']
@@ -338,7 +381,7 @@
 		}
 		
 		if(eval(parameters['navigation'])) {
-			map.addControl(new OpenLayers.Control.Navigation());
+			map.addControl(new OpenLayers.Control.Navigation({mouseWheelOptions: {interval: 800000, cumulative : false}}));
 		}
 		
 		if(eval(parameters['layerSwitcher'])) {
@@ -736,7 +779,10 @@
 			scrollTopValue = $(window).scrollTop();
             jQuery("#"+mapId).css({ position:"absolute", left: mapPosition.left+"px", top: mapPosition.top+"px"});
             jQuery("#"+mapId).animate({ left: "10px", top: "10px",height: (jQuery(window).height()-20) +"px", width: (jQuery(window).width()-20) +"px"  }, 600);
-			$('html,body').animate({scrollTop: 0}, '600');
+			$('html,body').animate({scrollTop: 0}, '600', null, function() {
+				// Force refresh in case of missing tiles after maximize.
+				map.updateSize();	
+			});	
 			maximizedMap=true;
          }
      

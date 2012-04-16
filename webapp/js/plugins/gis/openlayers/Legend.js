@@ -313,7 +313,7 @@ OpenLayers.Control.Legend =
 				} 
 				var defStyle = layer.styleMap.styles['default'].defaultStyle;
 				//draw the legend of the layer default style
-				this.drawLegend(baseLayer,featureLegend,renderers,layer,layer.name,defStyle);
+				//this.drawLegend(baseLayer,featureLegend,renderers,layer,layer.name,defStyle);
                 
 				//Draw the rules legend of the layers default style
 				for (var k = 0, rulesLen = layer.styleMap.styles['default'].rules.length; k < rulesLen; k++) {
@@ -359,29 +359,34 @@ OpenLayers.Control.Legend =
 				
 				//legend image
 				var legendDiv = document.createElement("div"); 
-				legendDiv.style.display="inline";
-
-				for (var j = 0, rlen = renderers.length; j < rlen; j++) {
-					var rendererClass = OpenLayers.Renderer[renderers[j]];
-					if (rendererClass && rendererClass.prototype.supported()) { 
-					 var rendererIcon = new rendererClass(legendDiv, null);
-					 break;
-					}
+				legendDiv.style.display="inline";		
+				if(layer.hasOwnProperty('legendGraphicURI')){
+					var icon = document.createElement("img");
+					icon.src = layer.legendGraphicURI;
+					legendDiv.appendChild(icon);
+				}else{
+					for (var j = 0, rlen = renderers.length; j < rlen; j++) {
+						var rendererClass = OpenLayers.Renderer[renderers[j]];
+						if (rendererClass && rendererClass.prototype.supported()) { 
+						 var rendererIcon = new rendererClass(legendDiv, null);
+						 break;
+						}
+					}					
+					rendererIcon.map = {
+						resolution:1,
+						getResolution: (function () {
+							return this.resolution;
+							})};
+					rendererIcon.setSize(new OpenLayers.Size(20,20));
+					rendererIcon.resolution = 1;
+					rendererIcon.setExtent(new OpenLayers.Bounds(0,0,20,20), true);
+	
+					 //-----------------------------------
+	
+					rendererIcon.clear();
+					rendererIcon.drawFeature(featureLegend, itemStyle);
 				}
 				
-				rendererIcon.map = {
-					resolution:1,
-					getResolution: (function () {
-						return this.resolution;
-						})};
-				rendererIcon.setSize(new OpenLayers.Size(20,20));
-				rendererIcon.resolution = 1;
-				rendererIcon.setExtent(new OpenLayers.Bounds(0,0,20,20), true);
-
-				 //-----------------------------------
-
-				rendererIcon.clear();
-				rendererIcon.drawFeature(featureLegend, itemStyle);
 		
                 var groupDiv = (baseLayer) ? this.baseLayersDiv
                                            : this.dataLayersDiv;
