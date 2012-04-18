@@ -197,29 +197,39 @@
 					
 					// Display in Legend
 					htOptions['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
-					
+					if (parameters[layersNames[index] + '.legendTitle'] != undefined &&
+						parameters[layersNames[index] + '.legendTitle'] !=''
+					){
+						htOptions['legendTitle']=parameters[layersNames[index] + '.legendTitle'];
+					}
 					// GetLegendGraphic 
-					if(htOptions['displayInLegend'] && !htParameters['isBaseLayer'] ){
+					if (htOptions['displayInLegend'] && !htParameters['isBaseLayer'] ) {
+					
 						htOptions['styleMap'] = new OpenLayers.StyleMap();
 						var layer;
-						if(parameters[layersNames[index] + '.legendGraphicLayer'] != undefined 
-						&&parameters[layersNames[index] + '.legendGraphicLayer'] !=''){
+						
+						if (parameters[layersNames[index] + '.legendGraphicLayer'] != undefined &&
+							parameters[layersNames[index] + '.legendGraphicLayer'] != ''
+						){
 							layer = parameters[layersNames[index] + '.legendGraphicLayer'];
-						}else{
+						} else {
 							layer = parameters[layersNames[index] + '.layer'];
 						}
 
 						var legendGraphicWidth = parameters[layersNames[index] + '.legendGraphicWidth'];
-						var width   = (legendGraphicWidth != undefined && legendGraphicWidth!='')?legendGraphicWidth:"20";
+						var width = (legendGraphicWidth != undefined && legendGraphicWidth!='')?legendGraphicWidth:"20";
 
 						var legendGraphicHeight = parameters[layersNames[index] + '.legendGraphicHeight'];
-						var height   = (legendGraphicHeight != undefined && legendGraphicHeight!='')?legendGraphicHeight:"20";	
+						var height = (legendGraphicHeight != undefined && legendGraphicHeight!='')?legendGraphicHeight:"20";	
 
 						var legendGraphicURI = server+'?SERVICE=WMS&REQUEST=GetLegendGraphic&FORMAT=image/png&WIDTH='+width+'&HEIGHT='+height+'&LAYER='+layer;
-						if((parameters[layersNames[index] + '.legendGraphicStyle'] != undefined 
-						&&parameters[layersNames[index] + '.legendGraphicStyle'] !='')){
-							legendGraphicURI+='&STYLE='+parameters[layersNames[index] + '.legendGraphicStyle'];
+						
+						if (parameters[layersNames[index] + '.legendGraphicStyle'] != undefined &&
+							parameters[layersNames[index] + '.legendGraphicStyle'] != ''
+						){
+							legendGraphicURI += '&STYLE='+parameters[layersNames[index] + '.legendGraphicStyle'];
 						}
+						
 						htOptions['legendGraphicURI'] = legendGraphicURI;					
 					}
 					
@@ -319,6 +329,12 @@
 					// Display in Legend
 					htParameters['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
 					
+					if (parameters[layersNames[index] + '.legendTitle'] != undefined &&
+						parameters[layersNames[index] + '.legendTitle'] != ''
+					){
+						htParameters['legendTitle'] = parameters[layersNames[index] + '.legendTitle'];
+					}
+					
 					// Create the new WFS Layer
 					layers[index] = new OpenLayers.Layer.Vector(parameters[layersNames[index] + '.name'], htParameters);
 					
@@ -368,9 +384,7 @@
 			
 		});
 
-		map.addLayers(layers);
-			 
-		 
+		map.addLayers(layers);		 
 		
 		// Setup controls
 		

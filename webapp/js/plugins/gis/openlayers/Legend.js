@@ -312,8 +312,10 @@ OpenLayers.Control.Legend =
 					var featureLegend = pointFeature;
 				} 
 				var defStyle = layer.styleMap.styles['default'].defaultStyle;
+				
 				//draw the legend of the layer default style
-				//this.drawLegend(baseLayer,featureLegend,renderers,layer,layer.name,defStyle);
+				var legendTitle = layer.hasOwnProperty('legendTitle') ? layer.legendTitle : layer.name;
+				this.drawLegend(baseLayer, featureLegend, renderers, layer, legendTitle, defStyle);
                 
 				//Draw the rules legend of the layers default style
 				for (var k = 0, rulesLen = layer.styleMap.styles['default'].rules.length; k < rulesLen; k++) {
