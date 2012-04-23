@@ -147,6 +147,8 @@
 		var layers = new Array();
 		var selectableLayers = new Array();
 		
+		var identifiableLayer = {};
+		
 		$.each(layersNames, function(index, value) {
 			//Convert the filter to the openLayer.filter format 
 				if (parameters[layersNames[index] +'.ogcFilter'] != undefined) {
@@ -235,6 +237,12 @@
 					
 					// Create the new WMS Layer
 					layers[index] = new OpenLayers.Layer.WMS(parameters[layersNames[index] + '.name'], server, htParameters, htOptions);
+					
+					// GetFeatureInfo
+					if ( eval(parameters[layersNames[index] + '.isIdentifiable']) ){
+						identifiableLayer["url"] = server;
+						identifiableLayer["layers"] = layers[index];
+					}
 				}
 				if (parameters[layersNames[index] + '.type'] == 'wfs') {
 					
@@ -522,8 +530,41 @@
  					deleteFeatureControl.unselect(e.feature);
  				}
  			}); 
-			 
+ 			
 		var controlList = new Array(); 
+		
+		// Manages the mouse single click event to get features info from WMS layers.
+		if(	eval( parameters['control.identifiable'] ) && 
+			typeof( identifiableLayer['layers'] ) != 'undefined'
+		) {     
+	        var info = new OpenLayers.Control.WMSGetFeatureInfo({
+	        	type:OpenLayers.Control.TYPE_TOGGLE,
+	            url: identifiableLayer['url'],
+	            layers: [identifiableLayer['layers']],
+	            title: parameters['control.identifiable.title'],
+	            queryVisible: true,
+	            eventListeners: {
+	                getfeatureinfo: function( event ) {
+	                	
+	                	var regex = /[.\s]*<body>[.\s<>\\]+<\/body>[.\s]*/gi;
+	                	if( !regex.test(event.text.replace(' ','')) ) 
+	                	{
+		                    map.addPopup(new OpenLayers.Popup.FramedCloud(
+		                        "getfeatureinfo", 
+		                        map.getLonLatFromPixel(event.xy),
+		                        null,
+		                        event.text,
+		                        null,
+		                        true
+		                    ));
+	                	}
+	                },
+	               
+	            }
+	        });
+	        controlList.push(info);
+		}
+
 		if(eval(parameters['control.print'])) {
 			controlList.push(printBtn);
 			
@@ -555,7 +596,7 @@
 		if(eval(parameters['control.delete'])) {
 			controlList.push(deleteFeatureControl);
 		}
-		 
+		
 		 var panel = new OpenLayers.Control.Panel({defaultControl: mouse});
 		 panel.addControls(controlList); 
 		 map.addControl(panel); 
