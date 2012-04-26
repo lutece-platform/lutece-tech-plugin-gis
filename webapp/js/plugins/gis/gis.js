@@ -163,16 +163,27 @@
 				}
 				
 				//Get server name either from layer or global properties
-				var server = '';
+				var serverName = '';
 				if (parameters[layersNames[index] + '.serverName'] != undefined
 					&& parameters[layersNames[index] + '.serverName'] != '' ){
-					server = parameters[layersNames[index] + '.serverName'];
+					serverName = parameters[layersNames[index] + '.serverName'];
 				}else{
-					server = globalParameters['serverName'];
+					serverName = globalParameters['serverName'];
 				}
+				
+				//Get feature namespace either from layer or global properties
+				var featureNS = '';
+				if (parameters[layersNames[index] + '.featureNS'] != undefined
+					&& parameters[layersNames[index] + '.featureNS'] != '' ){
+					featureNS = parameters[layersNames[index] + '.featureNS'];
+				}else{
+					featureNS = globalParameters['featureNS'];
+				}
+				
 				if (parameters[layersNames[index] + '.type'] == 'wms') {
 					
-					server = server + parameters['wms'];
+					server = serverName + parameters['wms'];
+					
 					//An object with key/value pairs representing the GetMap query string parameters and parameter values
 					var htParameters = {};
 					htParameters['layers'] = parameters[layersNames[index] + '.layer'];
@@ -181,12 +192,14 @@
 					htParameters['transparent'] = (jQuery.inArray(value, baseLayersNames) != -1) ? 'false' : 'true';
 					htParameters['isBaseLayer'] = (jQuery.inArray(value, baseLayersNames) == -1) ? false : true;
 					
+					
 					if (parameters[layersNames[index] + '.cqlFilter'] != '') {
 						htParameters['cql_Filter'] = parameters[layersNames[index] + '.cqlFilter'];
 					}
 					
 					//Hashtable of extra options to tag onto the layer
 					var htOptions = {};
+										
 					htOptions['buffer'] = 0;
 					if (parameters[layersNames[index] + '.minScale'] != '') 
 						htOptions['minScale'] = parameters[layersNames[index] + '.minScale'];
@@ -235,27 +248,38 @@
 						htOptions['legendGraphicURI'] = legendGraphicURI;					
 					}
 					
+					//SearchFeature	
+					if( !htParameters['isBaseLayer']){
+						htOptions['isSearchableLayer'] = eval(parameters[layersNames[index] + '.isSearchable']) ? true : false;
+						//Initialize search feature options
+						if( htOptions['isSearchableLayer'] ){
+							htOptions['searchWFSParameters'] = { 
+									url:serverName + parameters['wfs'],
+									featureNS:featureNS,
+									featureType:parameters[layersNames[index] + '.layer'],
+									ogcFilterProperty:parameters[layersNames[index] + '.searchable.ogcFilterProperty'],
+									featuresStyleName:parameters[layersNames[index] + '.searchable.layerStyle']
+							};
+						}
+					}
+					
 					// Create the new WMS Layer
 					layers[index] = new OpenLayers.Layer.WMS(parameters[layersNames[index] + '.name'], server, htParameters, htOptions);
 					
-					// GetFeatureInfo
-					if ( eval(parameters[layersNames[index] + '.isIdentifiable']) ){
-						identifiableLayer["url"] = server;
-						identifiableLayer["layers"] = layers[index];
+					if ( !htParameters['isBaseLayer'] )
+					{
+						// GetFeatureInfo
+						if ( eval(parameters[layersNames[index] + '.isIdentifiable']) )
+						{
+							identifiableLayer["url"] = server;
+							identifiableLayer["layers"] = layers[index];
+						}
 					}
+					
 				}
 				if (parameters[layersNames[index] + '.type'] == 'wfs') {
 					
-					server = server + parameters['wfs'];
-					
-					//Get feature namespace either from layer or global properties
-					var featureNS = '';
-					if (parameters[layersNames[index] + '.featureNS'] != undefined
-						&& parameters[layersNames[index] + '.featureNS'] != '' ){
-						featureNS = parameters[layersNames[index] + '.featureNS'];
-					}else{
-						featureNS = globalParameters['featureNS'];
-					}
+					server = serverName + parameters['wfs'];
 					
 					// allow testing of specific renderers via "?renderer=Canvas", etc
 					var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
@@ -401,28 +425,46 @@
  				position: new OpenLayers.Pixel(2, 15)
  			}));
 		}
-		
+				
 		if(eval(parameters['navigation'])) {
 			map.addControl(new OpenLayers.Control.Navigation({mouseWheelOptions: {interval: 800000, cumulative : false}}));
 		}
 		
 		if(eval(parameters['layerSwitcher'])) {
-			map.addControl(new OpenLayers.Control.LayerSwitcher());
+			map.addControl(new OpenLayers.Control.LayerSwitcher());	
 		}
-		
+				
+		//Add LayerSearchPanel
+		if(eval(parameters['layerSearchPanel'])) 
+		{
+			//IL8N helper
+			function getI18NMessage(key){
+				return (parameters['i18n'] != undefined && parameters['i18n'][key] != undefined ) 
+					?parameters['i18n'][key]:'${'+key+'} undefined !';
+			}
+			
+			var layerSearchPanel = new OpenLayers.Control.LayerSearchPanel();		
+			layerSearchPanel.setMessages({
+					'gis.map.layerSearchPanel.drop': getI18NMessage('gis.map.layerSearchPanel.drop'),
+					'gis.map.layerSearchPanel.empty': getI18NMessage('gis.map.layerSearchPanel.empty'),
+					'gis.map.layerSearchPanel.button': getI18NMessage('gis.map.layerSearchPanel.button')
+			});
+			map.addControl( layerSearchPanel );
+		}
+
 		if(eval(parameters['overviewMap'])) {
 			map.addControl(new OpenLayers.Control.OverviewMap());
 		}
 		
 		if(eval(parameters['keyboardNavigation'])) {
 			map.addControl(new OpenLayers.Control.KeyboardDefaults());
-		}
+		}	
 		if(eval(parameters['legend'])) {
 			map.addControl(new OpenLayers.Control.Legend());
-		}
+		}	
 		if(eval(parameters['control.scaleLine'])) {
 			map.addControl(new OpenLayers.Control.ScaleLine());
-		}  
+		}  		
 		map.zoomToMaxExtent();
 		
 		mapWidth = $("#"+ mapId).width();
@@ -608,7 +650,7 @@
 		 }
 
 		// preload images
-            var roots = parameters['imageUsed'].split(",");;
+            var roots = parameters['imageUsed'].split(",");
             var onImages = [];
             var offImages = [];
             for(var i=0; i<roots.length; ++i) {
@@ -844,7 +886,6 @@
 	}
 	function printMap(){
 		print();	
-	}
+	}	
      
 })(jQuery);
-
