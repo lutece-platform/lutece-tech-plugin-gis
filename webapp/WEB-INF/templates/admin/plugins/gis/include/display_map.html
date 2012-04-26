@@ -2,6 +2,7 @@
 <div id="${mapName}" class="map" style="display: none">
 </div>
 <link rel="stylesheet" type="text/css" href="js/plugins/gis/openlayers/Legend.css" />
+<link rel="stylesheet" type="text/css" href="js/plugins/gis/openlayers/LayerSearchPanel.css" />
 
 <script type="text/javascript">
 
@@ -12,6 +13,7 @@ function showMap(gisCode, mapName) {
 		$LAB
 			.script(baseUrl +"js/plugins/gis/openlayers/OpenLayers.js").wait()
 			.script(baseUrl +"js/plugins/gis/openlayers/Legend.js").wait()
+			.script(baseUrl +"js/plugins/gis/openlayers/LayerSearchPanel.js").wait()
 			.script(baseUrl +"js/plugins/gis/gis.js").wait()
 			.wait(function(){
 				$.get(baseUrl +'/jsp/admin/plugins/gis/DoDisplayMap.jsp?map_name='+mapName+'&gis_code='+gisCode, function(data) {
