@@ -191,8 +191,7 @@
 					htParameters['tiled'] = parameters[layersNames[index] + '.tiled'];
 					htParameters['transparent'] = (jQuery.inArray(value, baseLayersNames) != -1) ? 'false' : 'true';
 					htParameters['isBaseLayer'] = (jQuery.inArray(value, baseLayersNames) == -1) ? false : true;
-					
-					
+										
 					if (parameters[layersNames[index] + '.cqlFilter'] != '') {
 						htParameters['cql_Filter'] = parameters[layersNames[index] + '.cqlFilter'];
 					}
@@ -274,9 +273,9 @@
 							identifiableLayer["url"] = server;
 							identifiableLayer["layers"] = layers[index];
 						}
-					}
-					
+					}					
 				}
+				
 				if (parameters[layersNames[index] + '.type'] == 'wfs') {
 					
 					server = serverName + parameters['wfs'];
@@ -410,10 +409,7 @@
 							}
 						});
 					}
-			}
-			
-			
-			
+			}			
 		});
 
 		map.addLayers(layers);		 
@@ -434,21 +430,27 @@
 			map.addControl(new OpenLayers.Control.LayerSwitcher());	
 		}
 				
-		//Add LayerSearchPanel
-		if(eval(parameters['layerSearchPanel'])) 
+		// Possibly add LayerSearchPanel
+		
+		if (eval(parameters['layerSearchPanel'])) 
 		{
-			//IL8N helper
-			function getI18NMessage(key){
-				return (parameters['i18n'] != undefined && parameters['i18n'][key] != undefined ) 
-					?parameters['i18n'][key]:'${'+key+'} undefined !';
+			// i18n helper
+			function getI18NMessage(key) {
+			
+				return (
+					(parameters['i18n'] != undefined && parameters['i18n'][key] != undefined) ?
+					parameters['i18n'][key] : '${'+key+'} undefined'
+				);
 			}
 			
 			var layerSearchPanel = new OpenLayers.Control.LayerSearchPanel();		
+			
 			layerSearchPanel.setMessages({
-					'gis.map.layerSearchPanel.drop': getI18NMessage('gis.map.layerSearchPanel.drop'),
-					'gis.map.layerSearchPanel.empty': getI18NMessage('gis.map.layerSearchPanel.empty'),
-					'gis.map.layerSearchPanel.button': getI18NMessage('gis.map.layerSearchPanel.button')
+				'gis.map.layerSearchPanel.drop': getI18NMessage('gis.map.layerSearchPanel.drop'),
+				'gis.map.layerSearchPanel.empty': getI18NMessage('gis.map.layerSearchPanel.empty'),
+				'gis.map.layerSearchPanel.button': getI18NMessage('gis.map.layerSearchPanel.button')
 			});
+			
 			map.addControl( layerSearchPanel );
 		}
 
@@ -864,15 +866,18 @@
 		}
 		return operator;
 	}
+	
 	function toggleFullScreen(){ 
 		
-         if  (maximizedMap) {
+         if (maximizedMap) {
+         
 			jQuery("#"+mapId).animate({ left: mapPosition.left+"px", top: mapPosition.top+"px", height:mapHeight+"px", width:mapWidth+"px"  }, 00);
 			jQuery("#"+mapId).css({ position: "relative", left: "0px", top: "0px" });
 			$('html,body').animate({scrollTop: scrollTopValue}, '0');
 			maximizedMap=false;
-
-         }else{ 
+         }
+         else { 
+         
 			scrollTopValue = $(window).scrollTop();
             jQuery("#"+mapId).css({ position:"absolute", left: mapPosition.left+"px", top: mapPosition.top+"px"});
             jQuery("#"+mapId).animate({ left: "10px", top: "10px",height: (jQuery(window).height()-20) +"px", width: (jQuery(window).width()-20) +"px"  }, 600);
@@ -880,10 +885,11 @@
 				// Force refresh in case of missing tiles after maximize.
 				map.updateSize();	
 			});	
+			
 			maximizedMap=true;
-         }
-     
+         }     
 	}
+	
 	function printMap(){
 		print();	
 	}	
