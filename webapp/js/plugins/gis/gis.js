@@ -575,17 +575,17 @@
  				}
  			}); 
  			
-		var controlList = new Array(); 
-		
+		var controlList = new Array();
+		 
 		// Manages the mouse single click event to get features info from WMS layers.
-		if(	eval( parameters['control.identifiable'] ) && 
+		if(	eval( parameters['control.identify'] ) && 
 			typeof( identifiableLayer['layers'] ) != 'undefined'
 		) {     
 	        var info = new OpenLayers.Control.WMSGetFeatureInfo({
 	        	type:OpenLayers.Control.TYPE_TOGGLE,
 	            url: identifiableLayer['url'],
 	            layers: [identifiableLayer['layers']],
-	            title: parameters['control.identifiable.title'],
+	            title: parameters['control.identify.title'],
 	            queryVisible: true,
 	            eventListeners: {
 	                getfeatureinfo: function( event ) {
