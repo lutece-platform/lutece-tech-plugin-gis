@@ -651,9 +651,9 @@
 		 
 		 // Post treament for controls
 		 if(eval(parameters['layerSwitcher'])) {
-			$(".baseLbl").html(parameters['layerSwitcher.baseLayer.label']);
-			$(".dataLbl").html(parameters['layerSwitcher.dataLayer.label']);
-		 }
+				$("#baseLbl").html(parameters['layerSwitcher.baseLayer.label']);
+				$("#dataLbl").html(parameters['layerSwitcher.dataLayer.label']);
+			}
 
 		// preload images
             var roots = parameters['imageUsed'].split(",");

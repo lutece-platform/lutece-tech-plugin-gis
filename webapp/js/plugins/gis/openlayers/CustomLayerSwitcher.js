@@ -508,6 +508,7 @@ OpenLayers.Control.CustomLayerSwitcher =
 
 
         this.baseLbl = document.createElement("div");
+        this.baseLbl.id = "baseLbl";
         this.baseLbl.innerHTML = "<u>Base Layer</u>";
         this.baseLbl.style.marginTop = "3px";
         this.baseLbl.style.marginLeft = "3px";
@@ -520,6 +521,7 @@ OpenLayers.Control.CustomLayerSwitcher =
         */           
 
         this.dataLbl = document.createElement("div");
+        this.dataLbl.id = "dataLbl";
         this.dataLbl.innerHTML = "<u>Overlays</u>";
         this.dataLbl.style.marginTop = "3px";
         this.dataLbl.style.marginLeft = "3px";
