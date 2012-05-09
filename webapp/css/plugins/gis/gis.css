@@ -14,12 +14,12 @@ div.map {
 }
 
  .olControlPanel div {
- display:block;
- width: 24px;
- height: 24px;
- margin: 5px;
- background-color:white;
- float:right;
+	display:block;
+	width: 24px;
+	height: 24px;
+ 	margin: 5px;
+	background-color:white;
+	float:right;
 	width: 24px;
  }
  .olControlPanel{
@@ -28,19 +28,125 @@ div.map {
  }
 
  .olControlPanel .olControlWMSGetFeatureInfoItemActive {
- width: 22px;
- height: 22px;
- background-image: url("../../../images/admin/skin/plugins/gis/openlayers/WMSGetFeatureInfo_on.png");
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/WMSGetFeatureInfo_on.png");
  }
  .olControlPanel .olControlWMSGetFeatureInfoItemInactive {
- width: 22px;
- height: 22px;
- background-image: url("../../../images/admin/skin/plugins/gis/openlayers/WMSGetFeatureInfo_off.png");
+ 	width: 22px;
+ 	height: 22px;
+ 	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/WMSGetFeatureInfo_off.png");
 }
 .olControlScaleLineBottom {
-   display: none;
+   	display: none;
 }
 
+ .olControlPanel div {
+	display:block;
+	width: 24px;
+	height: 24px;
+	margin: 5px;
+	background-color:white;
+	float:right;
+	width: 24px;
+ }
+ .olControlPanel{
+ 	right: 0;
+	top: 0;
+ }
+
+ .olControlPanel .olControlMouseDefaultsItemActive {
+	background-color: blue;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/pan_on.png");
+ }
+ .olControlPanel .olControlMouseDefaultsItemInactive {
+	background-color: orange;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/pan_off.png");
+}
+ .olControlPanel .olControlDrawFeaturePointItemInactive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/ajouter_off.png");
+ }
+ .olControlPanel .olControlDrawFeaturePointItemActive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/ajouter_on.png");
+ }
+.olControlPanel .olControlDrawFeatureLineItemInactive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../js/plugins/gis/openlayers/theme/default/img/draw_line_off.png");
+ }
+ .olControlPanel .olControlDrawFeatureLineItemActive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../js/plugins/gis/openlayers/theme/default/img/draw_line_on.png");
+ }
+.olControlPanel .olControlDrawFeaturePolygonItemInactive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../js/plugins/gis/openlayers/theme/default/img/draw_polygon_off.png");
+ }
+ .olControlPanel .olControlDrawFeaturePolygonItemActive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../js/plugins/gis/openlayers/theme/default/img/draw_polygon_on.png");
+ }
+.olControlPanel .olControlModifyItemInactive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/move_off.png");
+ }
+ .olControlPanel .olControlModifyItemActive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/move_on.png");
+ }
+.olControlPanel .olControlDeleteItemInactive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/delete_off.png");
+ }
+ .olControlPanel .olControlDeleteItemActive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/delete_on.png");
+ }
+ .olControlPanel .olControlSelectFeatureItemActive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/select_off.png");
+ }
+ .olControlPanel .olControlSelectFeatureItemInactive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/select_on.png");
+ }
+ .olControlPanel .olControlFullscreenItemActive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/fullscreen_off.png");
+ }
+ .olControlPanel .olControlFullscreenItemInactive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/fullscreen_on.png");
+ }
+ .olControlPanel .olControlPrintItemActive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/print_off.png");
+ }
+ .olControlPanel .olControlPrintItemInactive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/print_on.png");
+ }
+ .olControlScaleLineBottom{
+ 	display:none;
+ }
+ 
 /* The polygon feature is not displayed in OpenLayers EditingToolbar */
 /*
 div.olControlDrawFeaturePolygonItemInactive, div.olControlDrawFeaturePolygonItemActive{
