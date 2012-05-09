@@ -148,6 +148,7 @@
 		var selectableLayers = new Array();
 		
 		var identifiableLayer = {};
+		var opacityLayers = new Array();
 		
 		$.each(layersNames, function(index, value) {
 			//Convert the filter to the openLayer.filter format 
@@ -409,7 +410,10 @@
 							}
 						});
 					}
-			}			
+			}
+			if (jQuery.inArray(value, selectableLayersNames) != -1) {
+				opacityLayers.push(layers[index]);
+			}
 		});
 
 		map.addLayers(layers);		 
@@ -427,7 +431,7 @@
 		}
 		
 		if(eval(parameters['layerSwitcher'])) {
-			map.addControl(new OpenLayers.Control.LayerSwitcher());	
+			map.addControl(new OpenLayers.Control.CustomLayerSwitcher());
 		}
 				
 		// Possibly add LayerSearchPanel
@@ -661,6 +665,21 @@
                 offImages[i] = new Image();
                 offImages[i].src = parameters['imagePath'] + roots[i] + "_off.png";
             }
+            
+          //Create slider opacity for each thematics layer
+    		$.each(opacityLayers, function(index,value){
+    			var sliderId = "#slider_"+index;
+    			var sliderOpacity = jQuery(sliderId);
+
+    			opacityLayers[index].setOpacity(0.75);
+    			sliderOpacity.slider({value:75, slide: function(event, ui) {
+    				if (ui.value != 0) {
+    					opacityLayers[index].setOpacity(ui.value/100);
+    				} else {
+    					opacityLayers[index].setOpacity(0);
+    				}
+    			}});
+    		});
     }
 /*
     
