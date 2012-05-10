@@ -168,6 +168,43 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	}    	
     	return false;
     },
+    
+    /**
+     * Method: resultInverseGeo
+     * 
+     * Properties:
+     * data - <String>
+     */
+    resultInverseGeo: function(data) {
+    	if(data != "") {
+    		var resultAddress = data.split("/");
+        	var lonLat = resultAddress[resultAddress.length-1];
+    		this.searchTextField.value = resultAddress[0];	
+        	this.drawFeatureOnSuccess(lonLat);
+    	}
+    },
+
+    /** 
+     * Method: startInverseGeo
+     * 
+     * Parameters:
+     * evt - {Event} 
+     */
+    startInverseGeo: function(evt) {
+        this.map.events.register("click", this, this.getAddress);
+    },
+    
+    /** 
+     * Method: stopInverseGeo
+     * 
+     * Parameters:
+     * evt - {Event} 
+     */
+    stopInverseGeo: function(evt) {
+        this.removeFeature();
+        this.searchTextField.value = "";
+        this.map.events.unregister("click", this, this.getAddress);
+    },
 
     /**
      * Method: setMap

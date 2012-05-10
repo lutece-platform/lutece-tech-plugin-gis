@@ -480,6 +480,24 @@
 			map.addControl(  new OpenLayers.Control.GeolocalizationPanel( options ) );
 		}
 		
+		//Inverse Geolocalization
+		if(	eval( parameters['control.inverseGeolocalization'] ))
+		{
+			var inverseGeoButton = new OpenLayers.Control.Button({
+				autoActivate:false,
+				displayClass: "olControlWMSGetFeatureInfo",
+				type:OpenLayers.Control.TYPE_TOGGLE
+			});
+			inverseGeoButton.events.register("activate", this, function(e) {
+				geolocalizationPanel.events.register("inverseGeoActivated", this, geolocalizationPanel.startInverseGeo(e));
+			});
+			
+			inverseGeoButton.events.register("deactivate", this, function(e) {
+				geolocalizationPanel.events.register("inverseGeoDeactivated", this, geolocalizationPanel.stopInverseGeo(e));
+			});
+			controlList.push(inverseGeoButton);
+		}
+		
 		if(eval(parameters['overviewMap'])) {
 			map.addControl(new OpenLayers.Control.OverviewMap());
 		}
