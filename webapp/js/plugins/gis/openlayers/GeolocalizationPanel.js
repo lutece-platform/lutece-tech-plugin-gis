@@ -201,9 +201,27 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      * evt - {Event} 
      */
     stopInverseGeo: function(evt) {
-        this.removeFeature();
+        this.cleanFeatures();
         this.searchTextField.value = "";
         this.map.events.unregister("click", this, this.getAddress);
+    },
+    
+    /** 
+     * Method: getAdress
+     * 
+     * Parameters:
+     * evt - {Event} 
+     */
+    getAddress: function(evt) {
+    	var lonLat = this.map.getLonLatFromPixel(evt.xy);
+    	var srid = this.map.getProjectionObject().getCode();
+    	srid = srid.substring(srid.indexOf(':')+1, srid.length);
+    	$.ajax({
+    		url: 'jsp/admin/plugins/gis/DoInverseGeolocalization.jsp',
+    		data: {x:lonLat.lon.toString(), y:lonLat.lat.toString(), srid:srid},
+    		success: $.proxy( this.resultInverseGeo, this),
+    	});    	
+    	return false;
     },
 
     /**

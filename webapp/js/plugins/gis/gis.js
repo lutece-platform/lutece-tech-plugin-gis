@@ -477,25 +477,8 @@
 			};
 			
 			options['radius'] = parameters['geolocalizationPanel.radius'];
-			map.addControl(  new OpenLayers.Control.GeolocalizationPanel( options ) );
-		}
-		
-		//Inverse Geolocalization
-		if(	eval( parameters['control.inverseGeolocalization'] ))
-		{
-			var inverseGeoButton = new OpenLayers.Control.Button({
-				autoActivate:false,
-				displayClass: "olControlWMSGetFeatureInfo",
-				type:OpenLayers.Control.TYPE_TOGGLE
-			});
-			inverseGeoButton.events.register("activate", this, function(e) {
-				geolocalizationPanel.events.register("inverseGeoActivated", this, geolocalizationPanel.startInverseGeo(e));
-			});
-			
-			inverseGeoButton.events.register("deactivate", this, function(e) {
-				geolocalizationPanel.events.register("inverseGeoDeactivated", this, geolocalizationPanel.stopInverseGeo(e));
-			});
-			controlList.push(inverseGeoButton);
+			var geolocalizationPanel = new OpenLayers.Control.GeolocalizationPanel( options );
+			map.addControl( geolocalizationPanel );
 		}
 		
 		if(eval(parameters['overviewMap'])) {
@@ -620,6 +603,24 @@
  			}); 
  			
 		var controlList = new Array();
+		
+		//Inverse Geolocalization
+		if(	eval( parameters['control.inverseGeolocalization'] ))
+		{
+			var inverseGeoButton = new OpenLayers.Control.Button({
+				autoActivate:false,
+				displayClass: "olControlWMSGetFeatureInfo",
+				type:OpenLayers.Control.TYPE_TOGGLE
+			});
+			inverseGeoButton.events.register("activate", this, function(e) {
+				geolocalizationPanel.events.register("inverseGeoActivated", this, geolocalizationPanel.startInverseGeo(e));
+			});
+			
+			inverseGeoButton.events.register("deactivate", this, function(e) {
+				geolocalizationPanel.events.register("inverseGeoDeactivated", this, geolocalizationPanel.stopInverseGeo(e));
+			});
+			controlList.push(inverseGeoButton);
+		}
 		 
 		// Manages the mouse single click event to get features info from WMS layers.
 		if(	eval( parameters['control.identify'] ) && 
