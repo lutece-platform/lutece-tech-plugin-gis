@@ -74,7 +74,7 @@ public class GisAddressJspBean extends PluginAdminPageJspBean
 		if ( ( x != null && x.length() != 0 )  && 
 			 ( y != null && y.length() != 0 )
 		){
-			LonLat lonLat = new LonLat(Long.parseLong(x),Long.parseLong(y));
+			LonLat lonLat = new LonLat(Double.parseDouble(x),Double.parseDouble(y));
 			// does inverse geolocalization
 			address = addressServiceFacade.getInverseGeolocalization(request, lonLat, srid); 
 		}
