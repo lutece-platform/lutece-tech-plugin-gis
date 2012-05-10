@@ -51,15 +51,34 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     /**
      * Constructor
      */
-    initialize: function (options){
-    	
+    initialize: function (options, map){
     	OpenLayers.Control.prototype.initialize.apply(this, options);
-    	    	
+    	
+    	this.setMap(map);
+    	
     	if ( undefined != options['messages'] ) { this.messages = options['messages']; }
 
     	this.graphicStyle = new OpenLayers.Style(options['style']);
     	this.radius = options['radius'];
     	this.minZoomLevel = options['minZoomLevel'];
+    	
+    	$("body").bind("GisInverseLocalization.start", $.proxy( 
+    			function ( event ) {
+    				this.map.events.register("click", this, this.getAddress);
+    			},
+    			this)
+    		);
+    	
+    	$("body").bind("GisInverseLocalization.done", $.proxy( 
+    			function ( event ) {
+    				this.cleanFeatures();
+    				if(this.searchTextField != null) {
+        		        this.searchTextField.value = "";
+    				}
+    				this.map.events.unregister("click", this, this.getAddress);
+    			},
+    			this)
+    		);
     },
     
     /**
@@ -99,6 +118,25 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     		this.radiusFeature.destroy();
     	}
     },
+    
+    /**
+     * Method: listenLocalizationDoneEvent
+     * 
+     * Properties:
+	 * event <Event>
+     */
+    listenLocalizationDoneEvent: function( event )
+    {
+    	$("body").bind("GisLocalization.done", $.proxy( 
+    			function ( event ) {
+    				if(this.searchTextField != null) {
+        				this.searchTextField.value = event.address;
+    				}
+    			},
+    			this)
+    		);
+    },
+    
     /**
      * Method: triggerLocalizationEvent
      * 
@@ -108,7 +146,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     triggerLocalizationEvent: function(lonLat, address)
     {
-    	var event = jQuery.Event("OpenLayers.localization", {
+    	var event = jQuery.Event("GisLocalization.done", {
     		lonLat: lonLat, 
     		address: address
     	});  	
@@ -135,8 +173,6 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 
     	this.draggableVectorLayer.addFeatures(this.displayedFeature);  	    
     	this.vectorLayer.addFeatures(this.radiusFeature);
-    	
-    	this.triggerLocalizationEvent(lonLat,"");
     },
     
     /**
@@ -147,7 +183,21 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     drawFeatureOnSuccess: function(data){
     	this.cleanFeatures();
-    	this.addFeature(data);
+    	
+    	var address = '';
+    	var lonlat = '';
+    	if( data.indexOf("/") != -1)
+    	{
+			var dataArray = data.split("/");
+	    	lonLat = dataArray[dataArray.length-1];
+	    	address = dataArray[0];
+    	}
+    	else
+    	{
+    		lonLat = data;
+    	} 	
+    	this.addFeature(lonLat);    	
+    	this.triggerLocalizationEvent(lonLat,address);
     },
     
     /**
@@ -159,6 +209,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	var field = $.trim($('.'+this.displayClass+'Field').val());	
     	var srid = this.map.getProjectionObject().getCode();
     	srid = srid.substring(srid.indexOf(':')+1, srid.length);
+
     	if(field != ""){
     		$.ajax({
     			  url: 'jsp/admin/plugins/gis/DoGeolocalization.jsp',
@@ -167,43 +218,6 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     			});
     	}    	
     	return false;
-    },
-    
-    /**
-     * Method: resultInverseGeo
-     * 
-     * Properties:
-     * data - <String>
-     */
-    resultInverseGeo: function(data) {
-    	if(data != "") {
-    		var resultAddress = data.split("/");
-        	var lonLat = resultAddress[resultAddress.length-1];
-    		this.searchTextField.value = resultAddress[0];	
-        	this.drawFeatureOnSuccess(lonLat);
-    	}
-    },
-
-    /** 
-     * Method: startInverseGeo
-     * 
-     * Parameters:
-     * evt - {Event} 
-     */
-    startInverseGeo: function(evt) {
-        this.map.events.register("click", this, this.getAddress);
-    },
-    
-    /** 
-     * Method: stopInverseGeo
-     * 
-     * Parameters:
-     * evt - {Event} 
-     */
-    stopInverseGeo: function(evt) {
-        this.cleanFeatures();
-        this.searchTextField.value = "";
-        this.map.events.unregister("click", this, this.getAddress);
     },
     
     /** 
@@ -219,7 +233,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	$.ajax({
     		url: 'jsp/admin/plugins/gis/DoInverseGeolocalization.jsp',
     		data: {x:lonLat.lon.toString(), y:lonLat.lat.toString(), srid:srid},
-    		success: $.proxy( this.resultInverseGeo, this),
+    		success: $.proxy( this.drawFeatureOnSuccess, this),
     	});    	
     	return false;
     },

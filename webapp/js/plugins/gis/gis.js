@@ -457,27 +457,29 @@
 			map.addControl( layerSearchPanel );
 		}
 		
+		var options = {};
+		
+		options['messages'] = {
+				'gis.map.geolocalizationPanel.button': getI18NMessage('gis.map.geolocalizationPanel.button'),				
+		};
+		
+		options['minZoomLevel'] = parameters['geolocalizationPanel.minZoomLevel'];
+		
+		options['style'] = {
+				externalGraphic: parameters['geolocalizationPanel.externalGraphic'],
+				graphicHeight: Number( parameters['geolocalizationPanel.graphicHeight'] ),
+				graphicWidth: Number( parameters['geolocalizationPanel.graphicWidth'] ),
+				graphicXOffset: Number( parameters['geolocalizationPanel.graphicXOffset'] ),
+				graphicYOffset: Number( parameters['geolocalizationPanel.graphicYOffset'] )
+		};
+		
+		options['radius'] = parameters['geolocalizationPanel.radius'];
+		
+		var geolocalizationPanel = new OpenLayers.Control.GeolocalizationPanel( options, map );
+		
 		// Possibly add GeolocalizationPanel
 		if (eval(parameters['geolocalizationPanel'])) 
 		{		
-			var options = {};
-			
-			options['messages'] = {
-					'gis.map.geolocalizationPanel.button': getI18NMessage('gis.map.geolocalizationPanel.button'),				
-			};
-			
-			options['minZoomLevel'] = parameters['geolocalizationPanel.minZoomLevel'];
-			
-			options['style'] = {
-					externalGraphic: parameters['geolocalizationPanel.externalGraphic'],
-					graphicHeight: Number( parameters['geolocalizationPanel.graphicHeight'] ),
-					graphicWidth: Number( parameters['geolocalizationPanel.graphicWidth'] ),
-					graphicXOffset: Number( parameters['geolocalizationPanel.graphicXOffset'] ),
-					graphicYOffset: Number( parameters['geolocalizationPanel.graphicYOffset'] )
-			};
-			
-			options['radius'] = parameters['geolocalizationPanel.radius'];
-			var geolocalizationPanel = new OpenLayers.Control.GeolocalizationPanel( options );
 			map.addControl( geolocalizationPanel );
 		}
 		
@@ -612,13 +614,19 @@
 				displayClass: "olControlWMSGetFeatureInfo",
 				type:OpenLayers.Control.TYPE_TOGGLE
 			});
+			
+			geolocalizationPanel.listenLocalizationDoneEvent();
+			
 			inverseGeoButton.events.register("activate", this, function(e) {
-				geolocalizationPanel.events.register("inverseGeoActivated", this, geolocalizationPanel.startInverseGeo(e));
+				var event = jQuery.Event("GisInverseLocalization.start");  	
+		    	jQuery("body").trigger(event);	
 			});
 			
 			inverseGeoButton.events.register("deactivate", this, function(e) {
-				geolocalizationPanel.events.register("inverseGeoDeactivated", this, geolocalizationPanel.stopInverseGeo(e));
+				var event = jQuery.Event("GisInverseLocalization.done");  	
+		    	jQuery("body").trigger(event);	
 			});
+			
 			controlList.push(inverseGeoButton);
 		}
 		 
