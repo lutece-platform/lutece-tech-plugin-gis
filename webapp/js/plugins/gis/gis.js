@@ -433,20 +433,19 @@
 		if(eval(parameters['layerSwitcher'])) {
 			map.addControl(new OpenLayers.Control.CustomLayerSwitcher());
 		}
-				
-		// Possibly add LayerSearchPanel
 		
+		// i18n helper
+		function getI18NMessage(key) {
+		
+			return (
+				(parameters['i18n'] != undefined && parameters['i18n'][key] != undefined) ?
+				parameters['i18n'][key] : '${'+key+'} undefined'
+			);
+		}
+		
+		// Possibly add LayerSearchPanel		
 		if (eval(parameters['layerSearchPanel'])) 
-		{
-			// i18n helper
-			function getI18NMessage(key) {
-			
-				return (
-					(parameters['i18n'] != undefined && parameters['i18n'][key] != undefined) ?
-					parameters['i18n'][key] : '${'+key+'} undefined'
-				);
-			}
-			
+		{			
 			var layerSearchPanel = new OpenLayers.Control.LayerSearchPanel();		
 			
 			layerSearchPanel.setMessages({
@@ -457,7 +456,30 @@
 			
 			map.addControl( layerSearchPanel );
 		}
-
+		
+		// Possibly add GeolocalizationPanel
+		if (eval(parameters['geolocalizationPanel'])) 
+		{		
+			var options = {};
+			
+			options['messages'] = {
+					'gis.map.geolocalizationPanel.button': getI18NMessage('gis.map.geolocalizationPanel.button'),				
+			};
+			
+			options['minZoomLevel'] = parameters['geolocalizationPanel.minZoomLevel'];
+			
+			options['style'] = {
+					externalGraphic: parameters['geolocalizationPanel.externalGraphic'],
+					graphicHeight: Number( parameters['geolocalizationPanel.graphicHeight'] ),
+					graphicWidth: Number( parameters['geolocalizationPanel.graphicWidth'] ),
+					graphicXOffset: Number( parameters['geolocalizationPanel.graphicXOffset'] ),
+					graphicYOffset: Number( parameters['geolocalizationPanel.graphicYOffset'] )
+			};
+			
+			options['radius'] = parameters['geolocalizationPanel.radius'];
+			map.addControl(  new OpenLayers.Control.GeolocalizationPanel( options ) );
+		}
+		
 		if(eval(parameters['overviewMap'])) {
 			map.addControl(new OpenLayers.Control.OverviewMap());
 		}

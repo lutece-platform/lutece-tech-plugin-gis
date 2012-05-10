@@ -14,5 +14,7 @@
     <tx:annotation-driven/>
 
     <bean id="viewDAO"  class="fr.paris.lutece.plugins.gis.business.ViewDAO" />
+    
+    <bean id="adresseServiceFacade"  class="fr.paris.lutece.plugins.gis.modules.address.service.ParisAddressServiceFacade" />
 
 </beans>
