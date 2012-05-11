@@ -244,7 +244,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     getGeolocalization: function( address, srid )
     {
 		$.ajax({
-			  url: 'jsp/admin/plugins/gis/DoGeolocalization.jsp',
+			  url: 'jsp/site/plugins/gis/DoGeolocalization.jsp',
 			  data: {address:address, srid:srid},
 			  success: $.proxy( this.drawFeatureOnSuccess, this ),
 			});
@@ -287,7 +287,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	var srid = this.map.getProjectionObject().getCode();
     	srid = srid.substring(srid.indexOf(':')+1, srid.length);
     	$.ajax({
-    		url: 'jsp/admin/plugins/gis/DoInverseGeolocalization.jsp',
+    		url: 'jsp/site/plugins/gis/DoInverseGeolocalization.jsp',
     		data: {x:lonLat.lon.toString(), y:lonLat.lat.toString(), srid:srid},
     		success: $.proxy( this.drawFeatureOnSuccess, this),
     	});    	
