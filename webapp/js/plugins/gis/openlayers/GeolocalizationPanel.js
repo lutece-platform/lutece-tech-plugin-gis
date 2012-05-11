@@ -53,14 +53,14 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     initialize: function (options, map){
     	OpenLayers.Control.prototype.initialize.apply(this, options);
-    	
-    	this.setMap(map);
-    	
+    	    	
     	if ( undefined != options['messages'] ) { this.messages = options['messages']; }
 
     	this.graphicStyle = new OpenLayers.Style(options['style']);
     	this.radius = options['radius'];
     	this.minZoomLevel = options['minZoomLevel'];
+    	
+    	this.setMap(map);
     	
     	$("body").bind("GisInverseLocalization.start", $.proxy( 
     			function ( event ) {
@@ -109,7 +109,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	
     	if( this.displayedFeature != null ) {
         	this.draggableVectorLayer.removeFeatures(this.displayedFeature);
-        	this.displayedFeature.destroy();    		
+        	//this.displayedFeature.destroy();    		
     	
     	}
     	
@@ -138,17 +138,37 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     },
     
     /**
+     * Method: listenLocalizationSendEvent
+     * 
+     * Properties:
+	 * event <Event>
+     */
+    listenLocalizationSendEvent: function( event )
+    {
+    	$("body").bind("GisLocalization.send",  
+    			$.proxy( function ( event ) {
+    				this.getGeolocalization ( event.address, this.getSRID() );
+    			},
+    			this)
+    					
+    	);
+    },
+    
+    /**
      * Method: triggerLocalizationEvent
      * 
      * Properties:
-     * lonLat: <String>
+     * lonLat: <OpenLayers.LonLat>
      * address: <String>
      */
-    triggerLocalizationEvent: function(lonLat, address)
+    triggerLocalizationEvent: function( type,  lonLat, address )
     {
-    	var event = jQuery.Event("GisLocalization.done", {
-    		lonLat: lonLat, 
-    		address: address
+    	var event = jQuery.Event(type, {
+    		'address':address,  		
+    		'lonLat': {
+    			lon:lonLat.lon,
+    			lat:lonLat.lat
+    		}
     	});  	
     	jQuery("body").trigger(event);	
     },
@@ -157,22 +177,35 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      * Method: addFeature
      * 
      * Properties:
-     * lonLat - <String>
+     * lonLat - <Openlayers.LonLat>
      */
-    addFeature: function(lonLat){
+    addFeature: function( lonLat ){
+    	    	
+    	var point = new OpenLayers.Geometry.Point( lonLat.lon, lonLat.lat );
     	
-    	var separator = lonLat.indexOf(',');
-    	var lon = Number(lonLat.substring(0,separator));
-    	var lat = Number(lonLat.substring(separator+1, lonLat.length));
-    	
-    	var point = new OpenLayers.Geometry.Point(lon,lat);
-    	
-    	this.displayedFeature = new OpenLayers.Feature.Vector(point, new OpenLayers.LonLat(lon,lat));   
+    	this.displayedFeature = new OpenLayers.Feature.Vector( point, lonLat );   
     	this.radiusGeometry =  OpenLayers.Geometry.Polygon.createRegularPolygon(point, this.radius, 100);
     	this.radiusFeature = new OpenLayers.Feature.Vector(this.radiusGeometry);
 
     	this.draggableVectorLayer.addFeatures(this.displayedFeature);  	    
     	this.vectorLayer.addFeatures(this.radiusFeature);
+    },
+    
+    /**
+     * Method: addFeature
+     * 
+     * Properties:
+     * lonLat - <LonLat>
+     * 
+     * Return: 
+     * <Openlayers.LonLat>
+     */    
+    getLonLatFromString: function(lonLat){
+    	var separator = lonLat.indexOf(',');
+    	var lon = Number(lonLat.substring(0,separator));
+    	var lat = Number(lonLat.substring(separator+1, lonLat.length));
+    	
+    	return new OpenLayers.LonLat( lon, lat );  	
     },
     
     /**
@@ -189,15 +222,32 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	if( data.indexOf("/") != -1)
     	{
 			var dataArray = data.split("/");
-	    	lonLat = dataArray[dataArray.length-1];
+	    	lonLat = this.getLonLatFromString(dataArray[dataArray.length-1]);
 	    	address = dataArray[0];
     	}
     	else
     	{
-    		lonLat = data;
+    		lonLat = this.getLonLatFromString(data);
     	} 	
     	this.addFeature(lonLat);    	
-    	this.triggerLocalizationEvent(lonLat,address);
+    	this.triggerLocalizationEvent("GisLocalization.done", lonLat, address);
+    },
+    
+    /**
+     * Method: getGeolocalization
+     * 
+     * Properties
+     * address <String>
+     * srid <String>
+     *
+     */   
+    getGeolocalization: function( address, srid )
+    {
+		$.ajax({
+			  url: 'jsp/admin/plugins/gis/DoGeolocalization.jsp',
+			  data: {address:address, srid:srid},
+			  success: $.proxy( this.drawFeatureOnSuccess, this ),
+			});
     },
     
     /**
@@ -206,18 +256,24 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     getFeatures: function() {
 
-    	var field = $.trim($('.'+this.displayClass+'Field').val());	
-    	var srid = this.map.getProjectionObject().getCode();
-    	srid = srid.substring(srid.indexOf(':')+1, srid.length);
+    	var addressFieldValue = $.trim($('.'+this.displayClass+'Field').val());	
 
-    	if(field != ""){
-    		$.ajax({
-    			  url: 'jsp/admin/plugins/gis/DoGeolocalization.jsp',
-    			  data: {address:field,	srid:srid},
-    			  success: $.proxy( this.drawFeatureOnSuccess, this ),
-    			});
-    	}    	
+    	if( addressFieldValue!= "" ){ 
+    		//this.getGeolocalization( addressFieldValue, this.getSRID() ); 
+    		var event =  jQuery.Event('GisLocalization.send', { address: addressFieldValue  });
+    		$('body').trigger(event);
+    	}
+
     	return false;
+    },
+    
+    /**
+     * Method: getSRID
+     *
+     */   
+    getSRID: function() {
+    	var srid = this.map.getProjectionObject().getCode();
+    	return srid.substring(srid.indexOf(':')+1, srid.length);
     },
     
     /** 
@@ -280,7 +336,13 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      	this.map.addLayer(this.vectorLayer);
      	
         // Add a drag feature control to move features around.
-     	this.dragControl = new OpenLayers.Control.DragFeature(this.draggableVectorLayer);
+     	this.dragControl = new OpenLayers.Control.DragFeature(this.draggableVectorLayer,{
+     		onComplete: OpenLayers.Function.bindAsEventListener( 
+     				function(feature, pixel){  
+     					this.triggerLocalizationEvent("GisLocalization.dragComplete", this.markerLonLat,"");
+     				},
+     				this)
+     	});
         this.map.addControl(this.dragControl);
 		this.dragControl.activate();
 		

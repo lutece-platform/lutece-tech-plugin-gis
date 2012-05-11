@@ -457,6 +457,9 @@
 			map.addControl( layerSearchPanel );
 		}
 		
+		
+		
+		// Defines localization Tool
 		var options = {};
 		
 		options['messages'] = {
@@ -471,15 +474,14 @@
 				graphicWidth: Number( parameters['geolocalizationPanel.graphicWidth'] ),
 				graphicXOffset: Number( parameters['geolocalizationPanel.graphicXOffset'] ),
 				graphicYOffset: Number( parameters['geolocalizationPanel.graphicYOffset'] )
-		};
-		
+		};		
 		options['radius'] = parameters['geolocalizationPanel.radius'];
-		
+
 		var geolocalizationPanel = new OpenLayers.Control.GeolocalizationPanel( options, map );
+		geolocalizationPanel.listenLocalizationSendEvent();
 		
 		// Possibly add GeolocalizationPanel
-		if (eval(parameters['geolocalizationPanel'])) 
-		{		
+		if (eval(parameters['geolocalizationPanel'])){		
 			map.addControl( geolocalizationPanel );
 		}
 		
