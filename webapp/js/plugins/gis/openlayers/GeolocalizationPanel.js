@@ -158,18 +158,12 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      * Method: triggerLocalizationEvent
      * 
      * Properties:
-     * lonLat: <OpenLayers.LonLat>
-     * address: <String>
+     * type: <String> The Event name
+     * data: <String>
      */
-    triggerLocalizationEvent: function( type,  lonLat, address )
+    triggerLocalizationEvent: function( type, data )
     {
-    	var event = jQuery.Event(type, {
-    		'address':address,  		
-    		'lonLat': {
-    			lon:lonLat.lon,
-    			lat:lonLat.lat
-    		}
-    	});  	
+    	var event = jQuery.Event( type, data );  	
     	jQuery("body").trigger(event);	
     },
     
@@ -214,7 +208,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      * Properties
      * data - <String>
      */
-    drawFeatureOnSuccess: function(data){
+    drawFeatureOnSuccess: function( data, inverse ) {
     	
     	// clean map even if no data has been received
     	this.cleanFeatures();    	
@@ -235,7 +229,11 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 	    	this.addFeature(lonLat);    		    	
     	}
     	// event send event if no data has been received
-    	this.triggerLocalizationEvent("GisLocalization.done", lonLat, address);
+    	this.triggerLocalizationEvent("GisLocalization.done", {
+    			'address': address,  		
+    			'lonLat': { lon:lonLat.lon, lat:lonLat.lat },
+    		    'inverse': inverse
+    	});
     },
     
     /**
@@ -251,8 +249,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 		$.ajax({
 			  url: 'jsp/site/plugins/gis/DoGeolocalization.jsp',
 			  data: {address:address, srid:srid},
-			  success: $.proxy( this.drawFeatureOnSuccess, this ),
-			});
+			  success: $.proxy( function ( data ) { this.drawFeatureOnSuccess ( data, false); }, this )
+		});
     },
     
     /**
@@ -265,7 +263,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 
     	if( addressFieldValue!= "" ){ 
     		//this.getGeolocalization( addressFieldValue, this.getSRID() ); 
-    		var event =  jQuery.Event('GisLocalization.send', { address: addressFieldValue  });
+    		var event =  jQuery.Event( 'GisLocalization.send',  { 'address': addressFieldValue } );
     		$('body').trigger(event);
     	}
 
@@ -292,9 +290,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	var srid = this.map.getProjectionObject().getCode();
     	srid = srid.substring(srid.indexOf(':')+1, srid.length);
     	$.ajax({
-    		url: 'jsp/site/plugins/gis/DoInverseGeolocalization.jsp',
-    		data: {x:lonLat.lon.toString(), y:lonLat.lat.toString(), srid:srid},
-    		success: $.proxy( this.drawFeatureOnSuccess, this),
+    			url: 'jsp/site/plugins/gis/DoInverseGeolocalization.jsp',
+    			data: {x:lonLat.lon.toString(), y:lonLat.lat.toString(), srid:srid},
+    			success: $.proxy( function ( data ) { this.drawFeatureOnSuccess ( data, true); }, this )
     	});    	
     	return false;
     },
@@ -344,7 +342,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      	this.dragControl = new OpenLayers.Control.DragFeature(this.draggableVectorLayer,{
      		onComplete: OpenLayers.Function.bindAsEventListener( 
      				function(feature, pixel){  
-     					this.triggerLocalizationEvent("GisLocalization.dragComplete", this.markerLonLat,"");
+     			    	this.triggerLocalizationEvent("GisLocalization.dragComplete", {	
+     		    			'lonLat': { lon:this.markerLonLat.lon, lat:this.markerLonLat.lat }
+     			    	});
      				},
      				this)
      	});
