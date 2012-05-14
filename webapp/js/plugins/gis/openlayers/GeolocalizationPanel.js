@@ -12,6 +12,10 @@
 OpenLayers.Control.GeolocalizationPanel =
 OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 	
+	ACTIVE_INVERSE_GEOCODE: "GisInverseLocalization.activate",
+	
+	DEACTIVE_INVERSE_GEOCODE: "GisInverseLocalization.desactive",
+		
 	messages: null,
 	
 	searchForm: null,
@@ -47,6 +51,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     selectControl: null,
     
     minZoomLevel: null,
+    
+    inverseGeocodeHandler: null,
 
     /**
      * Constructor
@@ -62,23 +68,52 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	
     	this.setMap(map);
     	
-    	$("body").bind("GisInverseLocalization.start", $.proxy( 
-    			function ( event ) {
-    				this.map.events.register("click", this, this.getAddress);
-    			},
-    			this)
-    		);
+    	$("body").bind( this.ACTIVE_INVERSE_GEOCODE, 
+    			$.proxy( this.activateInverseGeolocalization, this ) );
     	
-    	$("body").bind("GisInverseLocalization.done", $.proxy( 
-    			function ( event ) {
-    				this.cleanFeatures();
-    				if(this.searchTextField != null) {
-        		        this.searchTextField.value = "";
-    				}
-    				this.map.events.unregister("click", this, this.getAddress);
-    			},
-    			this)
-    		);
+    	$("body").bind( this.DEACTIVE_INVERSE_GEOCODE, 
+    			$.proxy( this.deactivateInverseGeolocalization, this ) );
+    },
+
+    /**
+     * Method: activateInverseGeolocalization
+     *
+     */ 
+    activateInverseGeolocalization: function( )
+    {
+		if ( this.inverseGeocodeHandler == null ) {
+			 var clickControl = new OpenLayers.Control( );
+		     this.map.addControl( clickControl );
+			 this.inverseGeocodeHandler = new OpenLayers.Handler.Click(clickControl,{
+				click: OpenLayers.Function.bindAsEventListener(
+						function ( clickEvent ) {
+							this.getAddress( clickEvent );
+						},
+						this)
+			},
+			{
+				double: false
+			});
+	        this.map.addControl( clickControl );
+	        clickControl.activate( );
+		}
+		this.inverseGeocodeHandler.activate( );
+    },
+    
+    /**
+     * Method: deactivateInverseGeolocalization
+     * 
+     */
+    deactivateInverseGeolocalization: function( )
+    {
+		this.cleanFeatures();
+		if(this.searchTextField != null) {
+	        this.searchTextField.value = "";
+		}
+		
+		if ( this.inverseGeocodeHandler ) {
+			this.inverseGeocodeHandler.deactivate();
+		}
     },
     
     /**
@@ -505,5 +540,5 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	
     	 this.div.appendChild(this.minimizeDiv);
     },
-    CLASS_NAME: "OpenLayers.Control.GeolocalizationPanel"
+    CLASS_NAME: "OpenLayers.Control.GeolocalizationPanel",
 });

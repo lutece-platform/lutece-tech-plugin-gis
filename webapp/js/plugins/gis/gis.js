@@ -621,20 +621,20 @@
 			geolocalizationPanel.listenLocalizationDoneEvent();
 			
 			inverseGeoButton.events.register("activate", this, function(e) {
-				if(map.zoom < parameters['control.inverseGeolocalization.minZoom']) {
+				if(map.zoom < parameters['control.inverseGeolocalization.minZoom']) 
+				{
 					inverseGeoButton.deactivate();
 				}
-				else {
+				else 
+				{
 					inverseGeoButton.activate();
-					var event = jQuery.Event("GisInverseLocalization.start");  	
-			    	jQuery("body").trigger(event);	
+			    	jQuery("body").trigger(jQuery.Event("GisInverseLocalization.activate"));	
 				}
 				
 			});
 			
 			inverseGeoButton.events.register("deactivate", this, function(e) {
-				var event = jQuery.Event("GisInverseLocalization.done");  	
-		    	jQuery("body").trigger(event);	
+		    	jQuery("body").trigger(jQuery.Event("GisInverseLocalization.desactive"));	
 			});
 			
 			map.events.register("zoomend", this, function(e) {
