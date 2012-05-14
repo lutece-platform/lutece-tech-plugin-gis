@@ -321,13 +321,15 @@ OpenLayers.Control.CustomLayerSwitcher =
                 
                 //Add div for the opacity sliders
                 if(!baseLayer){
-                	var sliderDiv = document.createElement("div");
-                	sliderDiv.id = "slider_"+nbDataLayer;
-                	
-                	groupDiv.appendChild(sliderDiv);
-                	groupDiv.appendChild(br);
-                   	
-                	++nbDataLayer;
+                	if (layer.CLASS_NAME == "OpenLayers.Layer.WMS") {
+                    	var sliderDiv = document.createElement("div");
+                    	sliderDiv.id = "slider_"+nbDataLayer;
+                    	
+                    	groupDiv.appendChild(sliderDiv);
+                    	groupDiv.appendChild(br);
+                       	
+                    	++nbDataLayer;
+                	}
                 }
             }
         }
