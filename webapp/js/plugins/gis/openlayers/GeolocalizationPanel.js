@@ -215,21 +215,26 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      * data - <String>
      */
     drawFeatureOnSuccess: function(data){
-    	this.cleanFeatures();
     	
-    	var address = '';
-    	var lonlat = '';
-    	if( data.indexOf("/") != -1)
+    	// clean map even if no data has been received
+    	this.cleanFeatures();    	
+    	var address = '', lonLat = '';
+    	data = jQuery.trim(data);
+    	if ( data.length != 0 ) 
     	{
-			var dataArray = data.split("/");
-	    	lonLat = this.getLonLatFromString(dataArray[dataArray.length-1]);
-	    	address = dataArray[0];
+	    	if( data.indexOf("/") != -1)
+	    	{
+				var dataArray = data.split("/");
+		    	lonLat = this.getLonLatFromString(dataArray[dataArray.length-1]);
+		    	address = dataArray[0];
+	    	}
+	    	else
+	    	{
+	    		lonLat = this.getLonLatFromString(data);
+	    	} 	
+	    	this.addFeature(lonLat);    		    	
     	}
-    	else
-    	{
-    		lonLat = this.getLonLatFromString(data);
-    	} 	
-    	this.addFeature(lonLat);    	
+    	// event send event if no data has been received
     	this.triggerLocalizationEvent("GisLocalization.done", lonLat, address);
     },
     
