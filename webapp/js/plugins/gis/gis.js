@@ -274,7 +274,11 @@
 							identifiableLayer["url"] = server;
 							identifiableLayer["layers"] = layers[index];
 						}
-					}					
+					}
+					
+					if (jQuery.inArray(value, selectableLayersNames) != -1) {
+						opacityLayers.push(layers[index]);
+					}
 				}
 				
 				if (parameters[layersNames[index] + '.type'] == 'wfs') {
@@ -410,9 +414,6 @@
 							}
 						});
 					}
-			}
-			if (jQuery.inArray(value, selectableLayersNames) != -1) {
-				opacityLayers.push(layers[index]);
 			}
 		});
 
@@ -610,23 +611,36 @@
 		
 		//Inverse Geolocalization
 		if(	eval( parameters['control.inverseGeolocalization'] ))
-		{
+		{		
 			var inverseGeoButton = new OpenLayers.Control.Button({
 				autoActivate:false,
 				displayClass: "olControlWMSGetFeatureInfo",
-				type:OpenLayers.Control.TYPE_TOGGLE
+				type:OpenLayers.Control.TYPE_TOGGLE,
 			});
 			
 			geolocalizationPanel.listenLocalizationDoneEvent();
 			
 			inverseGeoButton.events.register("activate", this, function(e) {
-				var event = jQuery.Event("GisInverseLocalization.start");  	
-		    	jQuery("body").trigger(event);	
+				if(map.zoom < parameters['control.inverseGeolocalization.minZoom']) {
+					inverseGeoButton.deactivate();
+				}
+				else {
+					inverseGeoButton.activate();
+					var event = jQuery.Event("GisInverseLocalization.start");  	
+			    	jQuery("body").trigger(event);	
+				}
+				
 			});
 			
 			inverseGeoButton.events.register("deactivate", this, function(e) {
 				var event = jQuery.Event("GisInverseLocalization.done");  	
 		    	jQuery("body").trigger(event);	
+			});
+			
+			map.events.register("zoomend", this, function(e) {
+				if(map.zoom < parameters['control.inverseGeolocalization.minZoom']) {
+					inverseGeoButton.deactivate();
+				}
 			});
 			
 			controlList.push(inverseGeoButton);
