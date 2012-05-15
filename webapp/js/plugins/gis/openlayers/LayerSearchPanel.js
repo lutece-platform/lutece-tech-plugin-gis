@@ -212,6 +212,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 			});
 			// 5 - Add the layer to the map.
 			this.map.addLayer( this.displayedLayer );
+			
+			// 6 - Send redraw event for the sliders
+			jQuery("body").trigger(jQuery.Event("Map.redraw"));
     	}
     	return false;
     },

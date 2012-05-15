@@ -779,6 +779,26 @@
     				}
     			}});
     		});
+    		
+    		//Catch Event Redraw
+    		$("body").bind( "Map.redraw", function() {
+    			/*
+    			 * Redraw sliders
+    			 */
+    			$.each(opacityLayers, function(index,value){
+    				var sliderId = "#slider_"+index;
+    				var sliderOpacity = jQuery(sliderId);
+
+    				opacityLayers[index].setOpacity(0.75);
+    				sliderOpacity.slider({value:75, slide: function(event, ui) {
+    					if (ui.value != 0) {
+    						opacityLayers[index].setOpacity(ui.value/100);
+    					} else {
+    						opacityLayers[index].setOpacity(0);
+    					}
+    				}});
+    			});
+    		});
     }
 /*
     
