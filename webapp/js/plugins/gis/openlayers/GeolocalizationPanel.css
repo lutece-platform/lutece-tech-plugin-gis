@@ -54,6 +54,12 @@
 	color:#FFFFFF;
 }
 
+.olControlGeolocalizationPanel .olControlGeolocalizationPanelLabel {
+	display: none;
+	color: red;
+	width: 100%;
+}
+
 .olControlGeolocalizationPanel .maximizeDiv {
 	top:5px;
 	left:0px;

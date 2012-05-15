@@ -26,6 +26,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     
     searchButton: null,
     
+    labelAutocomplete: null,
+    
     draggableVectorLayer: null,
     
     markerLonLat: null,
@@ -465,6 +467,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	 OpenLayers.Element.addClass(this.layersDiv, "layersDiv");    	
     	 
     	 this.searchTextField = document.createElement('input');
+    	 this.searchTextField.setAttribute('id', "autocomplete");
     	 this.searchTextField.setAttribute('type','text');
     	 this.searchTextField.setAttribute('name',this.displayClass+'Field');
     	 this.searchTextField.setAttribute('class',this.displayClass+'Field');
@@ -476,11 +479,17 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	        
     	 this.searchResultSpan = document.createElement('span');
     	 this.searchResultSpan.setAttribute('class',this.displayClass+'SpanResult');  
+    	 
+    	 this.labelAutocomplete = document.createElement('label');
+    	 this.labelAutocomplete.setAttribute('id', "labelAutocomplete");
+    	 this.labelAutocomplete.innerHTML = "";
+    	 this.labelAutocomplete.setAttribute('class',this.displayClass+'Label');
     	        	
     	 this.searchForm = document.createElement('form');
     	 this.searchForm.setAttribute('class',this.displayClass+'Form');
     	 this.searchForm.appendChild(this.searchTextField);
     	 this.searchForm.appendChild(this.searchButton);
+    	 this.searchForm.appendChild(this.labelAutocomplete);
     	 
     	 /*
     	  * TODO Maybe they is an other solution to do that.
