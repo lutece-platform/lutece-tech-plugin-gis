@@ -166,8 +166,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     {
     	$("body").bind("GisLocalization.done", $.proxy( 
     			function ( event ) {
-    				if(this.searchTextField != null) {
-        				this.searchTextField.value = event.address;
+    				if( this.searchTextField != null ) {
+    					if( event.inverse )
+    						this.searchTextField.value = event.address;
     				}
     			},
     			this)
