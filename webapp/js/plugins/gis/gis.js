@@ -662,17 +662,34 @@
 	                	var regex = /[.\s]*<body>[.\s<>\\]+<\/body>[.\s]*/gi;
 	                	if( !regex.test(event.text.replace(' ','')) ) 
 	                	{
-		                    map.addPopup(new OpenLayers.Popup.FramedCloud(
-		                        "getfeatureinfo", 
-		                        map.getLonLatFromPixel(event.xy),
-		                        null,
-		                        event.text,
-		                        null,
-		                        true
-		                    ));
-	                	}
-	                },
-	               
+	                		var featureInfoPopupId = "featureInfoPopup";
+		                	for(var i=0; i<map.popups.length; i++){
+		                		if( map.popups[i].id == featureInfoPopupId ) {
+		                			map.popups[i].hide();
+		                			map.removePopup(map.popups[i]);
+		                			break;
+		                		}
+		                	}
+			                map.addPopup( new OpenLayers.Popup.FramedCloud(
+			                		featureInfoPopupId, 
+			                		map.getLonLatFromPixel(event.xy),
+			                		null,
+			                		event.text,
+				                    null,
+				                    true
+				           ));
+		                }
+		            },
+		            deactivate: function ( event ) {
+		                	   var featureInfoPopupId = "featureInfoPopup";
+		                	   for(var i=0; i<map.popups.length; i++){
+		                			 if( map.popups[i].id == featureInfoPopupId ) {
+		                			         map.popups[i].hide();
+		                			         map.removePopup(map.popups[i]);
+		                			         break;
+		                			      }
+		                		}	
+		            },	               
 	            }
 	        });
 	        controlList.push(info);
