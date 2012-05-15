@@ -51,7 +51,7 @@
 <script src="js/jquery/plugins/ui/datepicker/ui.datepicker.js" type="text/javascript"></script>
 <script src="js/jquery/plugins/ui/datepicker/ui.datepicker-fr.js" type="text/javascript"></script>
 <script src="js/jquery/plugins/jpassword/jquery.jpassword.pack.js" type="text/javascript"></script>
-<script src="js/jquery/plugins/autocomplete/jquery.autocomplete.pack.js" type="text/javascript"></script>
+<script src="js/jquery/plugins/ui/jquery.ui.autocomplete.js" type="text/javascript"></script>
 <script src="js/jquery/plugins/generatepassword/jquery.password.min.js" type="text/javascript"></script>
 <script src="js/plugins/gis/LABjs-1.0.2rc1/LAB.js" type="text/javascript"></script>
 <script src="js/plugins/gis/gis.js" type="text/javascript"></script>
