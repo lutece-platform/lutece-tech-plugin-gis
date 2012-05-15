@@ -126,6 +126,7 @@
         		parameters['boundsRight'], parameters['boundsTop']
             );
         var numZoomLevels= parseInt(parameters['numZoomLevels']);
+        
         var options = {
         		controls: [],
         		numZoomLevels: numZoomLevels,
@@ -134,6 +135,14 @@
                 units: parameters['units'],
                 maxResolution: parameters['maxResolution']
         };
+        
+        if(eval(parameters['resolution.enabled'])) {
+            var res = parameters['resolution.grid'].split(",");
+            $.each(res, function(index, value) {
+            	res[index] = parseFloat(value);
+            });
+            options['resolutions'] = res;
+        }
         
         map = new OpenLayers.Map(idMap, options);
 
@@ -515,6 +524,11 @@
 			trigger: printMap, 
 			title: parameters['control.control.title']
 		});
+		
+		mouse = new OpenLayers.Control.MouseDefaults(
+				 {title:parameters['control.mouse.title']});
+		
+		if(selectableLayers > 0) {
 		var point= new OpenLayers.Control.DrawFeature(
 			selectableLayers[0], OpenLayers.Handler.Point,
 			{ 
@@ -570,8 +584,6 @@
 					title:parameters['control.select.title']
 				}
 			);
-			mouse = new OpenLayers.Control.MouseDefaults(
-			 {title:parameters['control.mouse.title']});
 			  
 
 			point.events.register("featureadded", this, function(e) {
@@ -606,7 +618,7 @@
  					deleteFeatureControl.unselect(e.feature);
  				}
  			}); 
- 			
+		}
 		var controlList = new Array();
 		
 		//Inverse Geolocalization
