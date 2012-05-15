@@ -143,6 +143,16 @@ div.map {
 	height: 22px;
 	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/print_on.png");
  }
+  .olControlPanel .olControlReverseGeocodingItemActive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/reverseGeocoding_on.png");
+ }
+  .olControlPanel .olControlReverseGeocodingItemInactive {
+	width: 22px;
+	height: 22px;
+	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/reverseGeocoding_off.png");
+ }
  .olControlScaleLineBottom{
  	display:none;
  }

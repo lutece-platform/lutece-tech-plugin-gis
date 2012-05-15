@@ -614,7 +614,7 @@
 		{		
 			var inverseGeoButton = new OpenLayers.Control.Button({
 				autoActivate:false,
-				displayClass: "olControlWMSGetFeatureInfo",
+				displayClass: "olControlReverseGeocoding",
 				type:OpenLayers.Control.TYPE_TOGGLE,
 			});
 			
