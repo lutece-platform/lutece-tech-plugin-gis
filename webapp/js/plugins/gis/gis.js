@@ -155,7 +155,7 @@
         var selectableLayersNames = (parameters['layers.selectable'] + ((parameters['layers.thematic'] != '') ? "," : "") + parameters['layers.thematic']).split(",");
 		var layers = new Array();
 		var selectableLayers = new Array();
-		
+		var hasDisplayInLegend = false;
 		var identifiableLayer = {};
 		var opacityLayers = new Array();
 		
@@ -221,6 +221,9 @@
 					
 					// Display in Legend
 					htOptions['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
+					
+					if ( htOptions['displayInLegend']) { hasDisplayInLegend = true; }
+					
 					if (parameters[layersNames[index] + '.legendTitle'] != undefined &&
 						parameters[layersNames[index] + '.legendTitle'] !=''
 					){
@@ -370,9 +373,11 @@
 					
 					// Display In LayerSwitcher
 					htParameters['displayInLayerSwitcher'] = eval(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
-					
+
 					// Display in Legend
 					htParameters['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
+					
+					if ( htParameters['displayInLegend'] ) { hasDisplayInLegend = true; }
 					
 					if (parameters[layersNames[index] + '.legendTitle'] != undefined &&
 						parameters[layersNames[index] + '.legendTitle'] != ''
@@ -440,7 +445,7 @@
 			map.addControl(new OpenLayers.Control.Navigation({mouseWheelOptions: {interval: 800000, cumulative : false}}));
 		}
 		
-		if(eval(parameters['layerSwitcher'])) {
+		if( eval(parameters['layerSwitcher']) ) {
 			map.addControl(new OpenLayers.Control.CustomLayerSwitcher());
 		}
 		
@@ -502,7 +507,7 @@
 		if(eval(parameters['keyboardNavigation'])) {
 			map.addControl(new OpenLayers.Control.KeyboardDefaults());
 		}	
-		if(eval(parameters['legend'])) {
+		if(eval(parameters['legend']) && parameters['layers.thematic'] != '' && hasDisplayInLegend) {
 			map.addControl(new OpenLayers.Control.Legend());
 		}	
 		if(eval(parameters['control.scaleLine'])) {
