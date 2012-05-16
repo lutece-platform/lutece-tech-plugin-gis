@@ -67,6 +67,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     		this.featuresNumber = 0;
     	}	
     	this.searchResultSpan.innerHTML='';
+    	jQuery("body").trigger(jQuery.Event("Map.redraw"));
     },
 
  
