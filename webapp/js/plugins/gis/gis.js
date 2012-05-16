@@ -633,6 +633,7 @@
 				autoActivate:false,
 				displayClass: "olControlReverseGeocoding",
 				type:OpenLayers.Control.TYPE_TOGGLE,
+				title: parameters['control.inverseGeolocalization.title']
 			});
 			
 			geolocalizationPanel.listenLocalizationDoneEvent();
