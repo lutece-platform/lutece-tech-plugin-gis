@@ -55,6 +55,7 @@ public class GisService
     private static final String MARK_VIEW = "view";
     private static final String BASE_URL = "base_url";
     private static final String MAP_NAME = "map_name";
+    private static final String VIEW_NAME = "view_name";
 
     //Templates
     private static GisService _singleton = new GisService(  );
@@ -77,9 +78,31 @@ public class GisService
     {
         return _singleton;
     }
-
+    
     /**
-     * Get the view from the map
+     * Gets the XPage view based on the given GIS code.
+     * 
+     * @param strGisCode
+     * @param parameters
+     * @param request
+     * @return The HTML page
+     */
+    public String getXPageView ( String strGisCode, String strXpageViewName, HttpServletRequest request )
+    {
+        View view = ViewHome.findByCode( strGisCode );
+        String strHtml = null;
+        if ( view != null ){
+        	HashMap<String, Object> model = getDefaultModel( view, request );
+        	model.put( VIEW_NAME, view.getTemplateFile() );
+            strHtml = generateTemplate( strXpageViewName, model, request);
+        }
+        return strHtml;
+ 
+    }
+    
+    /**
+     * Gets the view from the map.
+     * 
      * @param strGisCode
      * @param parameters
      * @param request
@@ -87,22 +110,41 @@ public class GisService
      */
     public String getView( String strGisCode, HashMap<String, String> parameters, HttpServletRequest request )
     {
-        HashMap<String, Object> model = new HashMap<String, Object>(  );
-
+        View view = ViewHome.findByCode( strGisCode );  
         String strHtml = null;
-        View view = ViewHome.findByCode( strGisCode );
-
-        if ( view != null )
-        {
-            model.put( MARK_VIEW, view );
-            model.put( BASE_URL, AppPathService.getBaseUrl( request ) );
-            model.put( MAP_NAME, request.getParameter( MAP_NAME ) );
-
-            HtmlTemplate template = AppTemplateService.getTemplate( view.getTemplateFile(  ), request.getLocale(  ),
-                    model );
-            strHtml = template.getHtml(  );
+        if ( view != null ) {
+        	strHtml = generateTemplate(view.getTemplateFile(  ), getDefaultModel(view,request), request);
         }
-
         return strHtml;
+    }
+    
+    /**
+     * Gets a default template model based on the given parameters.
+     * 
+     * @param view
+     * @param request
+     * @return The HashMap<String, Object> model
+     */
+    private static HashMap<String, Object> getDefaultModel(View view,  HttpServletRequest request)
+    {
+    	HashMap<String, Object> model = new HashMap<String, Object>(  );
+        model.put( MARK_VIEW, view );
+        model.put( BASE_URL, AppPathService.getBaseUrl( request ) );
+        model.put( MAP_NAME, request.getParameter( MAP_NAME ) );  	
+        return model;
+    }
+    
+    /**
+     * Generates the HTML page based on the given parameters.
+     * 
+     * @param templateFile
+     * @param model
+     * @param request
+     * @return HTML pages
+     */
+    private static String generateTemplate( String templateFile, 
+    		final HashMap<String, Object> model, final HttpServletRequest request )
+    {
+    	return AppTemplateService.getTemplate( templateFile, request.getLocale(  ), model ).getHtml();
     }
 }

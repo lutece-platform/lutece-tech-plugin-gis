@@ -1,0 +1,31 @@
+<#macro displayMap gis_code="" mapName="carte">
+<div id="${mapName}" class="map" style="display: none">
+</div>
+<link rel="stylesheet" type="text/css" href="js/plugins/gis/openlayers/Legend.css" />
+<link rel="stylesheet" type="text/css" href="js/plugins/gis/openlayers/LayerSearchPanel.css" />
+<link rel="stylesheet" type="text/css" href="js/plugins/gis/openlayers/GeolocalizationPanel.css" />
+
+<script type="text/javascript">
+
+function showMap(gisCode, mapName) {
+	$(document).ready(function() {
+		
+	var baseUrl = $('base').attr('href');
+		$LAB
+			.script(baseUrl +"js/plugins/gis/openlayers/OpenLayers.js").wait()
+			.script(baseUrl +"js/plugins/gis/openlayers/CustomLayerSwitcher.js").wait()
+			.script(baseUrl +"js/plugins/gis/openlayers/Legend.js").wait()
+			.script(baseUrl +"js/plugins/gis/openlayers/LayerSearchPanel.js").wait()
+			.script(baseUrl +"js/plugins/gis/openlayers/GeolocalizationPanel.js").wait()
+			.script(baseUrl +"js/plugins/gis/gis.js").wait()
+			.wait(function(){
+				$.get(baseUrl +'/jsp/site/plugins/gis/DoDisplayMap.jsp?map_name='+mapName+'&gis_code='+gisCode, function(data) {
+					$('#'+mapName).html(data);
+					$('#'+mapName).show();
+				});
+			});
+	});
+}
+ 
+</script>
+</#macro>

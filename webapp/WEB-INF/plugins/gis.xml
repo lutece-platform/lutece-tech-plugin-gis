@@ -35,4 +35,11 @@
         </admin-feature>
     </admin-features>
     
+    <!-- Application XPage  -->
+    <applications>
+       <application>
+           <application-id>gis</application-id>
+           <application-class>fr.paris.lutece.plugins.gis.web.xpage.GisXPageApplication</application-class>
+       </application>
+    </applications>    
 </plug-in>
