@@ -511,7 +511,14 @@
 			map.addControl(new OpenLayers.Control.Legend());
 		}	
 		if(eval(parameters['control.scaleLine'])) {
-			map.addControl(new OpenLayers.Control.ScaleLine());
+			var scaleLine = new OpenLayers.Control.ScaleLine();
+			
+			//Scale needs to be calculated for the SRID 4326
+			if(map.getProjectionObject().getCode() == "EPSG:4326") {
+				scaleLine.geodesic = true;
+			}
+			
+			map.addControl(scaleLine);
 		}  		
 		map.zoomToMaxExtent();
 		
