@@ -389,7 +389,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
         this.map.addControl(this.dragControl);
 		this.dragControl.activate();
 		
-        this.dragControl.handlers['drag'].stopDown = false;
+		this.dragControl.handlers['drag'].stopDown = true;
         this.dragControl.handlers['drag'].stopUp = false;
         this.dragControl.handlers['drag'].stopClick = false;
         this.dragControl.handlers['feature'].stopDown = false;
