@@ -56,10 +56,14 @@ div.map {
  }
 
  .olControlPanel .olControlMouseDefaultsItemActive {
+ 	width: 22px;
+	height: 22px;
 	background-color: blue;
 	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/pan_on.png");
  }
  .olControlPanel .olControlMouseDefaultsItemInactive {
+ 	width: 22px;
+	height: 22px;
 	background-color: orange;
 	background-image: url("../../../images/admin/skin/plugins/gis/openlayers/pan_off.png");
 }
