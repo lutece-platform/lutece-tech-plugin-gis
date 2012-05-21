@@ -54,6 +54,10 @@
 	color:#FFFFFF;
 }
 
+.olControlGeolocalizationPanel .olControlGeolocalizationPanelTitle {
+    color: white;
+}
+
 .olControlGeolocalizationPanel .olControlGeolocalizationPanelLabel {
 	display: none;
 	color: red;

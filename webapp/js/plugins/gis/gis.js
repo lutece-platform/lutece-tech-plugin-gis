@@ -466,7 +466,8 @@
 			layerSearchPanel.setMessages({
 				'gis.map.layerSearchPanel.drop': getI18NMessage('gis.map.layerSearchPanel.drop'),
 				'gis.map.layerSearchPanel.empty': getI18NMessage('gis.map.layerSearchPanel.empty'),
-				'gis.map.layerSearchPanel.button': getI18NMessage('gis.map.layerSearchPanel.button')
+				'gis.map.layerSearchPanel.button': getI18NMessage('gis.map.layerSearchPanel.button'),
+				'gis.map.layerSearchPanel.title': getI18NMessage('gis.map.layerSearchPanel.title')
 			});
 			
 			map.addControl( layerSearchPanel );
@@ -478,7 +479,8 @@
 		var options = {};
 		
 		options['messages'] = {
-				'gis.map.geolocalizationPanel.button': getI18NMessage('gis.map.geolocalizationPanel.button'),				
+				'gis.map.geolocalizationPanel.button': getI18NMessage('gis.map.geolocalizationPanel.button'),
+				'gis.map.geolocalizationPanel.title': getI18NMessage('gis.map.geolocalizationPanel.title')
 		};
 		
 		options['minZoomLevel'] = parameters['geolocalizationPanel.minZoomLevel'];

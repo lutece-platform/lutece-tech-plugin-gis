@@ -20,6 +20,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 	
 	searchForm: null,
 	
+	titleLabel: null,
+	
     searchTextField: null,
     
     searchResultSpan: null,
@@ -63,7 +65,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	OpenLayers.Control.prototype.initialize.apply(this, options);
     	    	
     	if ( undefined != options['messages'] ) { this.messages = options['messages']; }
-
+    	
     	this.graphicStyle = new OpenLayers.Style(options['style']);
     	this.radius = options['radius'];
     	this.minZoomLevel = options['minZoomLevel'];
@@ -467,6 +469,10 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	 this.layersDiv.id = this.id + "_layersDiv";
     	 OpenLayers.Element.addClass(this.layersDiv, "layersDiv");    	
     	 
+    	 this.titleLabel = document.createElement('label');
+    	 this.titleLabel.innerHTML = this.messages['gis.map.geolocalizationPanel.title'];
+    	 this.titleLabel.setAttribute('class',this.displayClass+'Title');  
+    	 
     	 this.searchTextField = document.createElement('input');
     	 this.searchTextField.setAttribute('id', "autocomplete");
     	 this.searchTextField.setAttribute('type','text');
@@ -499,6 +505,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	 this.mouseOverObserver = OpenLayers.Function.bindAsEventListener(this.addSubmitEvent,this);
     	 OpenLayers.Event.observe(this.div,"mouseover",this.mouseOverObserver);
     	        
+    	 this.layersDiv.appendChild(this.titleLabel);
+    	 this.layersDiv.appendChild(document.createElement('br'));
     	 this.layersDiv.appendChild(this.searchForm);
     	 this.layersDiv.appendChild(this.searchResultSpan);
    	        

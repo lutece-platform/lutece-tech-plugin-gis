@@ -38,6 +38,11 @@
     padding-left: 10px;
 }
 
+.olControlLayerSearchPanel .olControlLayerSearchPanelTitle {
+    color: white;
+    width: 50%;
+}
+
 .olControlLayerSearchPanel .olControlLayerSearchPanelButton {
 	margin-left:10px;
 }

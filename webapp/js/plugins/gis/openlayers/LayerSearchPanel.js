@@ -14,6 +14,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 	
 	messages: null,
 	
+	titleLabel: null,
+	
 	searchForm: null,
 	
     searchTextField: null,
@@ -308,6 +310,10 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	 this.layersDiv.id = this.id + "_layersDiv";
     	 OpenLayers.Element.addClass(this.layersDiv, "layersDiv");    	
     	 
+    	 this.titleLabel = document.createElement('label');
+    	 this.titleLabel.innerHTML = this.messages['gis.map.layerSearchPanel.title'];
+    	 this.titleLabel.setAttribute('class',this.displayClass+'Title');  
+    	 
     	 this.searchTextField = document.createElement('input');
     	 this.searchTextField.setAttribute('type','text');
     	 this.searchTextField.setAttribute('name','olControlLayerSearchPanelField');
@@ -334,6 +340,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	 this.mouseOverObserver = OpenLayers.Function.bindAsEventListener(this.addSubmitEvent,this);
     	 OpenLayers.Event.observe(this.div,"mouseover",this.mouseOverObserver);
     	        
+    	 this.layersDiv.appendChild(this.titleLabel);
+    	 this.layersDiv.appendChild(document.createElement('br'));
     	 this.layersDiv.appendChild(this.searchForm);
     	 this.layersDiv.appendChild(this.searchResultSpan);
    	        
