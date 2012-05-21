@@ -2,7 +2,7 @@
 
 <script defer="defer" type="text/javascript"> 
 /*
- * optionalParameters : le tableau "optionalParameters peut être déclaré dans le js devant contenir la carte
+ * optionalParameters : le tableau "optionalParameters peut ï¿½tre dï¿½clarï¿½ dans le js devant contenir la carte
  */	
 	var strSep = "";
 	if(!('${base_url}'.match("/$")) && !('${view.jsFile}'.match("^/")))
@@ -24,6 +24,16 @@
 						parameters[key]=value;	 
 					}); 
 				}
+				
+				parameters['i18n'] = {
+					'gis.map.layerSearchPanel.drop':'#i18n{gis.map.layerSearchPanel.drop}',
+					'gis.map.layerSearchPanel.empty':'#i18n{gis.map.layerSearchPanel.empty}',
+					'gis.map.layerSearchPanel.button':'#i18n{gis.map.layerSearchPanel.button}',
+					'gis.map.layerSearchPanel.title':'#i18n{gis.map.layerSearchPanel.title}',
+					'gis.map.geolocalizationPanel.button':'#i18n{gis.map.geolocalizationPanel.button}',
+					'gis.map.geolocalizationPanel.title':'#i18n{gis.map.geolocalizationPanel.title}'
+				};
+				
 				strSep = "";
 				if(!('${base_url}'.match("/$")))
 					strSep = "/";
