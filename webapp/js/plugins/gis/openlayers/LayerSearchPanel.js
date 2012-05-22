@@ -16,6 +16,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 	
 	titleLabel: null,
 	
+	deleteImg: null,
+	
 	searchForm: null,
 	
     searchTextField: null,
@@ -70,6 +72,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	}	
     	this.searchResultSpan.innerHTML='';
     	jQuery("body").trigger(jQuery.Event("Map.redraw"));
+    	this.deleteImg.style.display = 'none';
     },
 
  
@@ -197,12 +200,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 					var zoom = this.displayedLayer.getZoomForExtent(bounds,false) * 1.10;
 					this.map.setCenter(bounds.getCenterLonLat(),zoom,false);
 			    
-					var a = document.createElement('a');
-			    		a.setAttribute('class','olControlLayerSearchPanelDrop');
-			    		
-			    		a.innerHTML = this.messages['gis.map.layerSearchPanel.drop'].replace('{0}',$(".olControlLayerSearchPanelField").val());	
-			    		OpenLayers.Event.observe(a, "click",OpenLayers.Function.bindAsEventListener(this.removeFeatures,this));
-			    		p.appendChild(a);
+					this.deleteImg.setAttribute('title',this.messages['gis.map.layerSearchPanel.drop'].replace('{0}',$(".olControlLayerSearchPanelField").val()));
+			    	this.deleteImg.style.display = 'block';
+					OpenLayers.Event.observe(this.deleteImg, "click",OpenLayers.Function.bindAsEventListener(this.removeFeatures,this));
 		
 				}else{
 					p.innerHTML = this.messages['gis.map.layerSearchPanel.empty'].replace('{0}',$(".olControlLayerSearchPanelField").val());
@@ -341,7 +341,14 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	 OpenLayers.Event.observe(this.div,"mouseover",this.mouseOverObserver);
     	        
     	 this.layersDiv.appendChild(this.titleLabel);
-    	 this.layersDiv.appendChild(document.createElement('br'));
+
+    	 this.deleteImg = document.createElement('input');
+    	 this.deleteImg.setAttribute('class','olControlLayerSearchPanelDeleteButton');
+    	 this.deleteImg.setAttribute('type', 'image');
+		 this.deleteImg.setAttribute('src', './images/admin/skin/plugins/gis/openlayers/delete_on.png');
+
+    	 this.layersDiv.appendChild(this.deleteImg);
+    	 
     	 this.layersDiv.appendChild(this.searchForm);
     	 this.layersDiv.appendChild(this.searchResultSpan);
    	        

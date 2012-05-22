@@ -46,6 +46,22 @@
 .olControlLayerSearchPanel .olControlLayerSearchPanelButton {
 	margin-left:10px;
 }
+
+.olControlLayerSearchPanel .olControlLayerSearchPanelDrop{
+	color:white;
+}
+
+.olControlLayerSearchPanel .olControlLayerSearchPanelDeleteButton{
+	width: 16px;
+    height: 16px;
+	border-color: transparent;
+	vertical-align: text-top;
+	display: none;
+	position:absolute;
+	right: 10px;
+	top: 25px;
+}
+
 .olControlLayerSearchPanel .olControlLayerSearchPanelSpanResult, 
 .olControlLayerSearchPanel .olControlLayerSearchPanelSpanResult a{
 	color:#FFFFFF;
