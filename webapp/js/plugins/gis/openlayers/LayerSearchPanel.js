@@ -213,9 +213,10 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 					
 				}else{
 					p.innerHTML = this.messages['gis.map.layerSearchPanel.empty'].replace('{0}',$(".olControlLayerSearchPanelField").val());
-				}		
-				this.searchResultSpan.appendChild(p);
+					this.searchResultSpan.appendChild(p);
+				}
 			});
+
 
 			this.displayedLayer.events.register("featureadded", this, function(evt){
 				this.featuresNumber++;
