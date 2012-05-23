@@ -55,11 +55,9 @@
 	width: 16px;
     height: 16px;
 	border-color: transparent;
-	vertical-align: text-top;
-	display: none;
-	position:absolute;
-	right: 10px;
-	top: 25px;
+	vertical-align: middle;
+	visibility: hidden;
+	margin-left:10px;
 }
 
 .olControlLayerSearchPanel .olControlLayerSearchPanelSpanResult, 

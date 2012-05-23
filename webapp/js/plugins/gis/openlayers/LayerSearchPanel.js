@@ -56,7 +56,14 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */     
     addSubmitEvent: function(evt){
     	 OpenLayers.Event.stopObserving(this.div,"mouseover",this.mouseOverObserver);
-	 	 $('.olControlLayerSearchPanelForm').submit($.proxy(this.getFeatures,this));  
+	 	 $('.olControlLayerSearchPanelForm').submit($.proxy(this.getFeatures,this));
+    },
+    
+    clickDeleteButton: function(evt){
+    	if(this.deleteImg.style.visibility == "visible"){
+    		this.deleteImg.style.visibility = "hidden";
+    	}
+    	this.removeFeatures(evt);
     },
     
     /**
@@ -66,13 +73,14 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      * evt - <Event>
      */     
     removeFeatures: function(evt){
+    	
     	if( this.displayedLayer != null ){ 
     		this.displayedLayer.destroy(); 
     		this.featuresNumber = 0;
     	}	
+    	
     	this.searchResultSpan.innerHTML='';
     	jQuery("body").trigger(jQuery.Event("Map.redraw"));
-    	this.deleteImg.style.display = 'none';
     },
 
  
@@ -165,17 +173,17 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 				featureType:this.searchWFSParameters['featureType'],
 				featureNS:this.searchWFSParameters['featureNS']
 			});
-	
+    		
 			// [renderers]
 			var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
 				renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;	
 			htLayerParameters['renderers'] = renderer;
-
+			
 			// [styleMap]
 			htLayerParameters['styleMap'] = new OpenLayers.StyleMap( 
 					this.getStyle(this.searchWFSParameters['featureType'],this.searchWFSParameters['featuresStyleName'] ) 
 			);
-
+			
 	         // [OGCFilter]
 			var field = $(".olControlLayerSearchPanelField").val().replace(/%/gi,'*');//manage % as wildcard character
 			htLayerParameters['filter'] = new OpenLayers.Filter.Comparison({
@@ -185,10 +193,10 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 	         });
 			// [displayInLayerSwitcher]		
 			htLayerParameters['displayInLayerSwitcher'] = false;
-	         
+			
 			// 2 - Remove previous displayed features.				
 			this.removeFeatures();
-				
+			
 			// 3 - Create the new technical vector layer.
 			this.displayedLayer = new OpenLayers.Layer.Vector("WFS", htLayerParameters);
 				
@@ -201,9 +209,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 					this.map.setCenter(bounds.getCenterLonLat(),zoom,false);
 			    
 					this.deleteImg.setAttribute('title',this.messages['gis.map.layerSearchPanel.drop'].replace('{0}',$(".olControlLayerSearchPanelField").val()));
-			    	this.deleteImg.style.display = 'block';
-					OpenLayers.Event.observe(this.deleteImg, "click",OpenLayers.Function.bindAsEventListener(this.removeFeatures,this));
-		
+			    	this.deleteImg.style.visibility = 'visible';
+					
 				}else{
 					p.innerHTML = this.messages['gis.map.layerSearchPanel.empty'].replace('{0}',$(".olControlLayerSearchPanelField").val());
 				}		
@@ -297,6 +304,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 
     	 //configure main div
     	 
+    	 OpenLayers.Event.observe(this, "submit", this.listenSubmitEvent);
+    	 
     	 //OpenLayers.Event.observe(this.div, "mouseup",OpenLayers.Function.bindAsEventListener(this.mouseUp, this));  	  
     	 OpenLayers.Event.observe(this.div, "mouseup", this.ignoreEvent); 
     	 OpenLayers.Event.observe(this.div, "click",this.ignoreEvent);	        
@@ -321,18 +330,29 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	        
     	 //OpenLayers.Event.observe(this.input, "click",this.focusInputField);   	        
     	 this.searchButton = document.createElement('input');
+    	 this.searchButton.setAttribute('name','submitButton');
     	 this.searchButton.setAttribute('type','submit');
     	 this.searchButton.setAttribute('value', this.messages['gis.map.layerSearchPanel.button']);
-    	 this.searchButton.setAttribute('class','olControlLayerSearchPanelButton');    	 
-    	        
+    	 this.searchButton.setAttribute('class','olControlLayerSearchPanelButton');
+    	 
     	 this.searchResultSpan = document.createElement('span');
     	 this.searchResultSpan.setAttribute('class','olControlLayerSearchPanelSpanResult');  
-    	        	
+    	 
+    	 this.deleteImg = document.createElement('img');
+    	 // this.deleteImg.setAttribute('name','submitButton');
+    	 this.deleteImg.setAttribute('class','olControlLayerSearchPanelDeleteButton');
+    	 // this.deleteImg.setAttribute('value','deleteButton');
+    	 // this.deleteImg.setAttribute('type', 'image');
+		 this.deleteImg.setAttribute('src', './images/admin/skin/plugins/gis/openlayers/delete_on.png');
+		 OpenLayers.Event.observe(this.deleteImg, "click",OpenLayers.Function.bindAsEventListener(this.clickDeleteButton,this));
+		 
     	 this.searchForm = document.createElement('form');
+    	 this.searchForm.setAttribute('name','searchForm');
     	 this.searchForm.setAttribute('class','olControlLayerSearchPanelForm');
     	 this.searchForm.appendChild(this.searchTextField);
     	 this.searchForm.appendChild(this.searchButton);
-    	 
+    	 this.searchForm.appendChild(this.deleteImg);
+
     	 /*
     	  * TODO Maybe they is an other solution to do that.
     	  * Bind an event handler to the "submit" JavaScript event, after displaying the panel. 
@@ -341,13 +361,6 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	 OpenLayers.Event.observe(this.div,"mouseover",this.mouseOverObserver);
     	        
     	 this.layersDiv.appendChild(this.titleLabel);
-
-    	 this.deleteImg = document.createElement('input');
-    	 this.deleteImg.setAttribute('class','olControlLayerSearchPanelDeleteButton');
-    	 this.deleteImg.setAttribute('type', 'image');
-		 this.deleteImg.setAttribute('src', './images/admin/skin/plugins/gis/openlayers/delete_on.png');
-
-    	 this.layersDiv.appendChild(this.deleteImg);
     	 
     	 this.layersDiv.appendChild(this.searchForm);
     	 this.layersDiv.appendChild(this.searchResultSpan);
