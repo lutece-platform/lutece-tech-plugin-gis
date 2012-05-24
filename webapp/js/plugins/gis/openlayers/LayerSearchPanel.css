@@ -40,7 +40,12 @@
 
 .olControlLayerSearchPanel .olControlLayerSearchPanelTitle {
     color: white;
-    width: 50%;
+    margin-left:10px;
+    width: auto;
+}
+
+.olControlLayerSearchPanel .olControlLayerSearchPanelForm {
+	margin-left:10px;
 }
 
 .olControlLayerSearchPanel .olControlLayerSearchPanelButton {
