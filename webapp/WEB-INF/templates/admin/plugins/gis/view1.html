@@ -1,5 +1,5 @@
 
-
+<link rel="stylesheet" type="text/css" href="js/jquery/plugins/ui/css/jquery-ui.css"/>
 <script defer="defer" type="text/javascript"> 
 /*
  * optionalParameters : le tableau "optionalParameters peut �tre d�clar� dans le js devant contenir la carte
@@ -9,6 +9,13 @@
 		strSep = "/";
 	$LAB
 		.script("${base_url}"+strSep+"${view.jsFile}").wait()
+		.script("${base_url}"+strSep+"js/jquery/plugins/ui/jquery-ui.js").wait()
+		.script("${base_url}"+strSep+"js/jquery/plugins/ui/jquery.ui.core.js").wait()
+		.script("${base_url}"+strSep+"js/jquery/plugins/ui/jquery.ui.mouse.js").wait()
+		.script("${base_url}"+strSep+"js/jquery/plugins/ui/jquery.ui.slider.js").wait()
+		.script("${base_url}"+strSep+"js/jquery/plugins/ui/jquery.ui.widget.js").wait()
+		.script("${base_url}"+strSep+"js/jquery/plugins/ui/jquery.ui.autocomplete.js").wait()
+		.script("${base_url}"+strSep+"js/plugins/gis/gis.js").wait()
 		.wait(function(){ 
 			if($.trim($("#${map_name}").html()=="")){ 
 				var parameters = new Array();

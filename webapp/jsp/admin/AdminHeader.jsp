@@ -37,24 +37,16 @@
 <link rel="stylesheet" type="text/css" href="js/jquery/plugins/ui/jstree/themes/style.css" />
 <link rel="stylesheet" type="text/css" href="js/jquery/plugins/ui/datepicker/ui.datepicker.css"/>
 <link rel="stylesheet" type="text/css" href="js/jquery/plugins/jpassword/jpassword.css"/>
-<link rel="stylesheet" type="text/css" href="js/jquery/plugins/ui/css/jquery-ui.css"/>
 <script type="text/javascript" src="js/tools.js"></script>
 <script src="js/jquery/jquery.min.js" type="text/javascript"></script>
-<script src="js/jquery/plugins/ui/jquery-ui.js" type="text/javascript"></script>
-<script src="js/jquery/plugins/ui/jquery.ui.core.js" type="text/javascript"></script>
-<script src="js/jquery/plugins/ui/jquery.ui.mouse.js" type="text/javascript"></script>
-<script src="js/jquery/plugins/ui/jquery.ui.slider.js" type="text/javascript"></script>
-<script src="js/jquery/plugins/ui/jquery.ui.widget.js" type="text/javascript"></script>
 <script src="js/jquery/plugins/ui/jstree/jquery.cookie.js" type="text/javascript"></script>
 <script src="js/jquery/plugins/ui/jstree/jquery.jstree.js" type="text/javascript"></script>
 <script src="js/jquery/plugins/ui/jstree/jquery.hotkeys.js" type="text/javascript"></script>
 <script src="js/jquery/plugins/ui/datepicker/ui.datepicker.js" type="text/javascript"></script>
 <script src="js/jquery/plugins/ui/datepicker/ui.datepicker-fr.js" type="text/javascript"></script>
 <script src="js/jquery/plugins/jpassword/jquery.jpassword.pack.js" type="text/javascript"></script>
-<script src="js/jquery/plugins/ui/jquery.ui.autocomplete.js" type="text/javascript"></script>
 <script src="js/jquery/plugins/generatepassword/jquery.password.min.js" type="text/javascript"></script>
 <script src="js/plugins/gis/LABjs-1.0.2rc1/LAB.js" type="text/javascript"></script>
-<script src="js/plugins/gis/gis.js" type="text/javascript"></script>
 <!--[if IE 6]>
 <!-- Hack for menu -->
 <script type="text/javascript">
