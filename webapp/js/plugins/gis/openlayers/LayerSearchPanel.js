@@ -214,6 +214,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 				}else{
 					p.innerHTML = this.messages['gis.map.layerSearchPanel.empty'].replace('{0}',$(".olControlLayerSearchPanelField").val());
 					this.searchResultSpan.appendChild(p);
+			    	if(this.deleteImg.style.visibility == "visible"){
+			    		this.deleteImg.style.visibility = "hidden";
+			    	}
 				}
 			});
 
@@ -362,7 +365,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	 OpenLayers.Event.observe(this.div,"mouseover",this.mouseOverObserver);
     	        
     	 this.layersDiv.appendChild(this.titleLabel);
-    	 
+    	 this.layersDiv.appendChild(document.createElement('br'));
     	 this.layersDiv.appendChild(this.searchForm);
     	 this.layersDiv.appendChild(this.searchResultSpan);
    	        
