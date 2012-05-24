@@ -112,9 +112,9 @@ OpenLayers.Control.CustomLayerSwitcher =
         this.clearLayersArray("data");
         
         this.map.events.unregister("addlayer", this, this.redraw);
-        //this.map.events.unregister("changelayer", this, this.redraw);
+        this.map.events.unregister("changelayer", this, this.redraw);
         this.map.events.unregister("removelayer", this, this.redraw);
-        //this.map.events.unregister("changebaselayer", this, this.redraw);
+        this.map.events.unregister("changebaselayer", this, this.redraw);
         
         OpenLayers.Control.prototype.destroy.apply(this, arguments);
     },
@@ -129,9 +129,9 @@ OpenLayers.Control.CustomLayerSwitcher =
         OpenLayers.Control.prototype.setMap.apply(this, arguments);
 
         this.map.events.register("addlayer", this, this.redraw);
-        //this.map.events.register("changelayer", this, this.redraw);
+        this.map.events.register("changelayer", this, this.redraw);
         this.map.events.register("removelayer", this, this.redraw);
-        //this.map.events.register("changebaselayer", this, this.redraw);
+        this.map.events.register("changebaselayer", this, this.redraw);
     },
 
     /**
@@ -338,7 +338,10 @@ OpenLayers.Control.CustomLayerSwitcher =
         this.dataLbl.style.display = (containsOverlays) ? "" : "none";        
         
         // if no baselayers, dont display the baselayer label
-        this.baseLbl.style.display = (containsBaseLayers) ? "" : "none";        
+        this.baseLbl.style.display = (containsBaseLayers) ? "" : "none"; 
+        
+        // redraw sliders
+        jQuery("body").trigger(jQuery.Event("Map.redraw"));
 
         return this.div;
     },
