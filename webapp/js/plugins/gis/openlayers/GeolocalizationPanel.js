@@ -62,7 +62,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      * Constructor
      */
     initialize: function (options, map){
-    	OpenLayers.Control.prototype.initialize.apply(this, options);
+    	OpenLayers.Control.prototype.initialize.apply(this, arguments);
     	    	
     	if ( undefined != options['messages'] ) { this.messages = options['messages']; }
     	

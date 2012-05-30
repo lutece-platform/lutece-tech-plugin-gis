@@ -274,6 +274,7 @@ OpenLayers.Control.CustomLayerSwitcher =
                 inputElem.value = layer.name;
                 inputElem.checked = checked;
                 inputElem.defaultChecked = checked;
+                inputElem.style.borderColor = "transparent";
 
                 if (!baseLayer && !layer.inRange) {
                     inputElem.disabled = true;
@@ -494,7 +495,7 @@ OpenLayers.Control.CustomLayerSwitcher =
         OpenLayers.Event.observe(this.div, "mousedown",
         	OpenLayers.Function.bindAsEventListener(this.mouseDown, this));
         OpenLayers.Event.observe(this.div, "dblclick", this.ignoreEvent);
-    	OpenLayers.Event.observe(this.div, "mouseup", OpenLayers.Event.clearMouseListener);
+        //OpenLayers.Event.observe(this.div, "mouseup", OpenLayers.Event.clearMouseListener);
 
         // layers list div        
         this.layersDiv = document.createElement("div");
