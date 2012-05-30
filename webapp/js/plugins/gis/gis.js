@@ -1021,10 +1021,9 @@
 	
 	function toggleFullScreen(){ 
 		
-         if (maximizedMap) {
-         
+		if (maximizedMap) {
 			jQuery("#"+mapId).animate({ left: mapPosition.left+"px", top: mapPosition.top+"px", height:mapHeight+"px", width:mapWidth+"px"  }, 00);
-			jQuery("#"+mapId).css({ position: "relative", left: "0px", top: "0px" });
+			jQuery("#"+mapId).css({ position: "relative", left: "0px", top: "0px", 'z-index': '0' });
 			$('html,body').animate({scrollTop: scrollTopValue}, '0');
 			maximizedMap=false;
          }
@@ -1032,14 +1031,13 @@
          
 			scrollTopValue = $(window).scrollTop();
             jQuery("#"+mapId).css({ position:"absolute", left: mapPosition.left+"px", top: mapPosition.top+"px"});
-            jQuery("#"+mapId).animate({ left: "10px", top: "10px",height: (jQuery(window).height()-20) +"px", width: (jQuery(window).width()-20) +"px"  }, 600);
+            jQuery("#"+mapId).animate({'z-index': '100', left: "10px", top: "10px",height: (jQuery(window).height()-20) +"px", width: (jQuery(window).width()-20) +"px"  }, 600);
 			$('html,body').animate({scrollTop: 0}, '600', null, function() {
 				// Force refresh in case of missing tiles after maximize.
 				map.updateSize();	
-			});	
-			
+			});
 			maximizedMap=true;
-         }     
+         }       
 	}
 	
 	function printMap(){
