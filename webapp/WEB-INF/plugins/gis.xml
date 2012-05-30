@@ -31,6 +31,7 @@
             <feature-description>gis.adminFeature.gis_management.description</feature-description>
             <feature-level>3</feature-level>
             <feature-url>jsp/admin/plugins/gis/ManageGis.jsp</feature-url>
+            <feature-group>APPLICATIONS</feature-group>
             <feature-icon-url>images/admin/skin/plugins/gis/gis_feature.png</feature-icon-url>
         </admin-feature>
     </admin-features>
