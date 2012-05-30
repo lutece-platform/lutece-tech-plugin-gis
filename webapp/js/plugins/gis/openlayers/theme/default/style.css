@@ -1,8 +1,9 @@
 div.olMap {
-    z-index: 100;
+    z-index: 0;
     padding: 0px!important;
     margin: 0px!important;
     cursor: default;
+    background-color: white;
 }
 
 div.olMapViewport {
