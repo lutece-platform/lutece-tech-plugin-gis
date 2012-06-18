@@ -339,64 +339,72 @@ OpenLayers.Control.Legend =
 
 	drawLegend: function(baseLayer,featureLegend,renderers,layer,itemName,itemStyle){
 		// create span
-                var labelSpan = document.createElement("span");
-                OpenLayers.Element.addClass(labelSpan, "labelSpan");
-                if (!baseLayer && !layer.inRange) {
-                    labelSpan.style.color = "gray";
-                }
-				labelSpan.style.color = "white";
-                labelSpan.innerHTML = itemName; //--------------
-                labelSpan.style.verticalAlign =  "baseline";
-				
-                // create line break
-                var br = document.createElement("br");
-    
-                //TODO: openlayer crash with the following lines uncommented
-                /*var groupArray = (baseLayer) ? this.baseLayers
-                                             : this.dataLayers;
-                groupArray.push({
-                    'layer': layer,
-                    'labelSpan': labelSpan
-                });*/
-				
-				//legend image
-				var legendDiv = document.createElement("div"); 
-				legendDiv.style.display="inline";		
-				if(layer.hasOwnProperty('legendGraphicURI')){
-					var icon = document.createElement("img");
-					icon.src = layer.legendGraphicURI;
-					legendDiv.appendChild(icon);
-				}else{
-					for (var j = 0, rlen = renderers.length; j < rlen; j++) {
-						var rendererClass = OpenLayers.Renderer[renderers[j]];
-						if (rendererClass && rendererClass.prototype.supported()) { 
-						 var rendererIcon = new rendererClass(legendDiv, null);
-						 break;
-						}
-					}					
-					rendererIcon.map = {
-						resolution:1,
-						getResolution: (function () {
-							return this.resolution;
-							})};
-					rendererIcon.setSize(new OpenLayers.Size(20,20));
-					rendererIcon.resolution = 1;
-					rendererIcon.setExtent(new OpenLayers.Bounds(0,0,20,20), true);
-	
-					 //-----------------------------------
-	
-					rendererIcon.clear();
-					rendererIcon.drawFeature(featureLegend, itemStyle);
-				}
-				
+        var labelSpan = document.createElement("span");
+        OpenLayers.Element.addClass(labelSpan, "labelSpan");
+        if (!baseLayer && !layer.inRange) {
+            labelSpan.style.color = "gray";
+        }
+		labelSpan.style.color = "white";
+        labelSpan.innerHTML = itemName; //--------------
+        labelSpan.style.verticalAlign =  "baseline";
 		
-                var groupDiv = (baseLayer) ? this.baseLayersDiv
-                                           : this.dataLayersDiv;
-				if (!baseLayer){
-					groupDiv.appendChild(legendDiv);
+
+        //TODO: openlayer crash with the following lines uncommented
+        /*var groupArray = (baseLayer) ? this.baseLayers
+                                     : this.dataLayers;
+        groupArray.push({
+            'layer': layer,
+            'labelSpan': labelSpan
+        });*/
+		
+		//legend image
+		var legendDiv = document.createElement("div"); 
+		legendDiv.style.display="inline";
+		
+        var groupDiv = (baseLayer) ? this.baseLayersDiv : this.dataLayersDiv;                
+		if ( !baseLayer ){ groupDiv.appendChild(legendDiv); }
+		
+		if(layer.hasOwnProperty('legendGraphicURI'))
+		{
+			labelSpan.setAttribute("style","display:block;");
+            groupDiv.appendChild( labelSpan );
+			
+            //-----------------------------------			                
+			var icon = document.createElement("img");
+			icon.src = layer.legendGraphicURI;
+			legendDiv.appendChild(icon);
+			
+			//-----------------------------------		                
+			if ( !baseLayer ){ groupDiv.appendChild(legendDiv); }
+		}
+		else
+		{
+			for (var j = 0, rlen = renderers.length; j < rlen; j++) {
+				var rendererClass = OpenLayers.Renderer[renderers[j]];
+				if (rendererClass && rendererClass.prototype.supported()) { 
+				 var rendererIcon = new rendererClass(legendDiv, null);
+				 break;
 				}
-                groupDiv.appendChild(labelSpan);
-                groupDiv.appendChild(br);
+			}					
+			rendererIcon.map = {
+				resolution:1,
+				getResolution: (function () {
+					return this.resolution;
+					})};
+			rendererIcon.setSize(new OpenLayers.Size(20,20));
+			rendererIcon.resolution = 1;
+			rendererIcon.setExtent(new OpenLayers.Bounds(0,0,20,20), true);
+
+			//-----------------------------------
+
+			rendererIcon.clear();
+			rendererIcon.drawFeature(featureLegend, itemStyle);
+			
+			//-----------------------------------
+			if ( !baseLayer ){ groupDiv.appendChild(legendDiv); }
+            groupDiv.appendChild( labelSpan );				
+		}
+        groupDiv.appendChild(  document.createElement("br") );	// create line break
 	},
     /** 
      * Method:
