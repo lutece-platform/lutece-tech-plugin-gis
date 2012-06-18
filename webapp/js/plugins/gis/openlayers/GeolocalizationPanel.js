@@ -58,6 +58,10 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     
     inverseGeocodeHandler: null,
 
+    activeInverseGeo: false,
+    
+    geolocalizationCall: false,
+
     /**
      * Constructor
      */
@@ -102,6 +106,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 	        clickControl.activate( );
 		}
 		this.inverseGeocodeHandler.activate( );
+
+		this.activeInverseGeo = true;
     },
     
     /**
@@ -118,6 +124,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 		if ( this.inverseGeocodeHandler ) {
 			this.inverseGeocodeHandler.deactivate();
 		}
+
+		this.activeInverseGeo = false;
     },
     
     /**
@@ -309,6 +317,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     		//this.getGeolocalization( addressFieldValue, this.getSRID() ); 
     		var event =  jQuery.Event( 'GisLocalization.send',  { 'address': addressFieldValue } );
     		$('body').trigger(event);
+    		this.geolocalizationCall = true;
     	}
 
     	return false;
@@ -374,8 +383,26 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      	
      	// set center map on a feature added event
      	this.draggableVectorLayer.events.register("featureadded", this, function(evt) {
+     		var zoom;
+     		
+     		//Reverse geolocalization case
+     		if(this.activeInverseGeo && !this.geolocalizationCall) {
+     			zoom = this.map.zoom;
+     		}
+     		//Geolocalization case
+     		else {
+     			//If the geolocalization min zoom is inferior to the current zoom, we keep the current zoom
+     			if (this.minZoomLevel < this.map.zoom) {
+     				zoom = this.map.zoom;
+     			}
+     			//Zoom to the geolocalization min zoom level
+     			else {
+         			zoom = this.minZoomLevel;
+     			}
+     			this.geolocalizationCall=false;
+     		}
      		var bounds = this.draggableVectorLayer.getDataExtent();
-     		this.map.setCenter(bounds.getCenterLonLat(),this.minZoomLevel, false);
+     		this.map.setCenter(bounds.getCenterLonLat(),zoom, false);
      	});
      	
      	// Add a new layer to the map
