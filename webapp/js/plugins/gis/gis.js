@@ -172,32 +172,40 @@
 					parameters[layersNames[index] + '.filter'] = getOGCFilter(parameters[layersNames[index] + '.ogcFilter']);
 				}
 				
-				//Get server name either from layer or global properties
-				var serverName = '';
-				if (parameters[layersNames[index] + '.serverName'] != undefined
-					&& parameters[layersNames[index] + '.serverName'] != '' ){
-					serverName = parameters[layersNames[index] + '.serverName'];
-				}else{
-					serverName = globalParameters['serverName'];
+				//Helper to get parameter from layer parameters, view parameters or global parameters
+				var getParameter = function ( name ) {
+					
+					var exists = function (map, key) { return (map[key] != undefined && map[key] != ''); }
+					
+					var param = '';
+					//layer parameters
+					if ( exists(parameters,layersNames[index] + '.' + name) ){
+						param = parameters[layersNames[index] + '.' + name]; 
+					//view parameters
+					}else if ( exists(parameters,name) ){
+						param = parameters[name];
+					//global parameters
+					}else{
+						param = globalParameters[name];
+					}
+					return param;
 				}
+				//Initialize request parameters
+				var serverName = getParameter( 'serverName' );						
+				var featureNS = getParameter( 'featureNS' );
+				var wms = getParameter( 'wms' );
+				var wfs = getParameter( 'wfs' );
+				var format = getParameter( 'format' );
 				
-				//Get feature namespace either from layer or global properties
-				var featureNS = '';
-				if (parameters[layersNames[index] + '.featureNS'] != undefined
-					&& parameters[layersNames[index] + '.featureNS'] != '' ){
-					featureNS = parameters[layersNames[index] + '.featureNS'];
-				}else{
-					featureNS = globalParameters['featureNS'];
-				}
-				
+				//Initialize a new WMS Layer
 				if (parameters[layersNames[index] + '.type'] == 'wms') {
 					
-					server = serverName + parameters['wms'];
+					server = serverName + wms;
 					
 					//An object with key/value pairs representing the GetMap query string parameters and parameter values
 					var htParameters = {};
 					htParameters['layers'] = parameters[layersNames[index] + '.layer'];
-					htParameters['format'] = parameters['format'];
+					htParameters['format'] = format;
 					htParameters['tiled'] = parameters[layersNames[index] + '.tiled'];
 					htParameters['transparent'] = (jQuery.inArray(value, baseLayersNames) != -1) ? 'false' : 'true';
 					htParameters['isBaseLayer'] = (jQuery.inArray(value, baseLayersNames) == -1) ? false : true;
@@ -256,7 +264,7 @@
 						){
 							legendGraphicURI += '&STYLE='+parameters[layersNames[index] + '.legendGraphicStyle'];
 						}
-						
+												
 						htOptions['legendGraphicURI'] = legendGraphicURI;					
 					}
 					
@@ -293,9 +301,10 @@
 					}
 				}
 				
+				// Initialize a new WFS layers
 				if (parameters[layersNames[index] + '.type'] == 'wfs') {
 					
-					server = serverName + parameters['wfs'];
+					server = serverName + wfs;
 					
 					// allow testing of specific renderers via "?renderer=Canvas", etc
 					var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
