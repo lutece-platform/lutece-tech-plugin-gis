@@ -650,7 +650,7 @@
 			var inverseGeoButton = new OpenLayers.Control.Button({
 				autoActivate:false,
 				displayClass: "olControlReverseGeocoding",
-				type:OpenLayers.Control.TYPE_TOGGLE,
+				type:OpenLayers.Control.TYPE_TOOL,
 				title: parameters['control.inverseGeolocalization.title']
 			});
 			
@@ -687,7 +687,7 @@
 			typeof( identifiableLayer['layers'] ) != 'undefined'
 		) {     
 	        var info = new OpenLayers.Control.WMSGetFeatureInfo({
-	        	type:OpenLayers.Control.TYPE_TOGGLE,
+	        	type:OpenLayers.Control.TYPE_TOOL,
 	            url: identifiableLayer['url'],
 	            layers: [identifiableLayer['layers']],
 	            title: parameters['control.identify.title'],
