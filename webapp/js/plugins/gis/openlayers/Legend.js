@@ -379,6 +379,7 @@ OpenLayers.Control.Legend =
 		}
 		else
 		{
+			labelSpan.setAttribute("style","display:inline;");
 			for (var j = 0, rlen = renderers.length; j < rlen; j++) {
 				var rendererClass = OpenLayers.Renderer[renderers[j]];
 				if (rendererClass && rendererClass.prototype.supported()) { 
