@@ -347,7 +347,7 @@ OpenLayers.Control.Legend =
 		labelSpan.style.color = "white";
         labelSpan.innerHTML = itemName; //--------------
         labelSpan.style.verticalAlign =  "baseline";
-		
+		labelSpan.setAttribute("style","display:block;min-height:20px");
 
         //TODO: openlayer crash with the following lines uncommented
         /*var groupArray = (baseLayer) ? this.baseLayers
@@ -358,28 +358,22 @@ OpenLayers.Control.Legend =
         });*/
 		
 		//legend image
-		var legendDiv = document.createElement("div"); 
-		legendDiv.style.display="inline";
-		
-        var groupDiv = (baseLayer) ? this.baseLayersDiv : this.dataLayersDiv;                
-		if ( !baseLayer ){ groupDiv.appendChild(legendDiv); }
+		var legendDiv = document.createElement("div"); 		
+        var groupDiv = (baseLayer) ? this.baseLayersDiv : this.dataLayersDiv;
 		
 		if(layer.hasOwnProperty('legendGraphicURI'))
-		{
-			labelSpan.setAttribute("style","display:block;");
-            groupDiv.appendChild( labelSpan );
-			
+		{		
             //-----------------------------------			                
 			var icon = document.createElement("img");
 			icon.src = layer.legendGraphicURI;
 			legendDiv.appendChild(icon);
 			
-			//-----------------------------------		                
+			//-----------------------------------
+            groupDiv.appendChild( labelSpan );
 			if ( !baseLayer ){ groupDiv.appendChild(legendDiv); }
 		}
 		else
 		{
-			labelSpan.setAttribute("style","display:inline;");
 			for (var j = 0, rlen = renderers.length; j < rlen; j++) {
 				var rendererClass = OpenLayers.Renderer[renderers[j]];
 				if (rendererClass && rendererClass.prototype.supported()) { 
@@ -403,9 +397,9 @@ OpenLayers.Control.Legend =
 			
 			//-----------------------------------
 			if ( !baseLayer ){ groupDiv.appendChild(legendDiv); }
-            groupDiv.appendChild( labelSpan );				
+	        legendDiv.setAttribute("style","float:left");
+            groupDiv.appendChild( labelSpan );		
 		}
-        groupDiv.appendChild(  document.createElement("br") );	// create line break
 	},
     /** 
      * Method:
