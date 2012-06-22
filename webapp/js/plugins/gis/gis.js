@@ -551,7 +551,7 @@
 		mouse = new OpenLayers.Control.MouseDefaults(
 				 {title:parameters['control.mouse.title']});
 		
-		if(selectableLayers > 0) {
+		if(selectableLayers.length > 0) {
 		var point= new OpenLayers.Control.DrawFeature(
 			selectableLayers[0], OpenLayers.Handler.Point,
 			{ 
