@@ -7,6 +7,7 @@
 <script src="${openLayersPath}Legend.js" type="text/javascript"></script>
 <script src="${openLayersPath}LayerSearchPanel.js" type="text/javascript"></script>
 <script src="${openLayersPath}GeolocalizationPanel.js" type="text/javascript"></script>
+<script src="js/jquery/plugins/autocomplete/jquery.ui.autocomplete.js" type="text/javascript"></script>
 
 <link rel="stylesheet" type="text/css" href="${openLayersPath}Legend.css" />
 <link rel="stylesheet" type="text/css" href="${openLayersPath}LayerSearchPanel.css" />
@@ -21,5 +22,12 @@
 <script defer="defer" type="text/javascript"> 	
 	$(document).ready(function() {
         $('#'+ "${map_name}" ).show();
+        
+        //Ajout de l'auto complétion
+        //La fonction creatreAutocomplete prend en parametre le selecteur du champ sur lequel s'applique l'auto complétion
+        $.getScript('jsp/plugins/address/modules/autocomplete/autocomplete-js.jsp',function(data, textStatus, jqxhr) {
+			createAutocomplete("#autocomplete"); 
+		});
+        
 	});
 </script>
