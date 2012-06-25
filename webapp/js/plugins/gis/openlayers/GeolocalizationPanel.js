@@ -488,7 +488,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      loadContents: function() {
 
     	 //configure main div 
-    	 OpenLayers.Event.observe(this.div, "mouseup", this.ignoreEvent); 
+    	 OpenLayers.Event.observe(this.div, "mouseup",OpenLayers.Function.bindAsEventListener(this.mouseUp, this));  	  
+    	 //OpenLayers.Event.observe(this.div, "mouseup", this.ignoreEvent); 
     	 OpenLayers.Event.observe(this.div, "click",this.ignoreEvent);	        
     	 OpenLayers.Event.observe(this.div, "mousedown", this.ignoreEvent);  	        
     	 OpenLayers.Event.observe(this.div, "dblclick", this.ignoreEvent);
