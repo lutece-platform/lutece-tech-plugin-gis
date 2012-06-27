@@ -1,10 +1,31 @@
 <#include "include/display_map.html">
+<script src="js/plugins/gis/LABjs-1.0.2rc1/LAB.js" type="text/javascript"></script>
+
+<!-- Librairie permettant d'utiliser l'auto completion -->
+<!--<script src="js/jquery/plugins/ui/jquery.ui.autocomplete.js" type="text/javascript"></script>-->
 
 <div class="content-box" >
 
     <h2>#i18n{gis.manage_features.pageTitle}</h2>
 
-	<@displayMap gis_code="CPL"/>
-	
+    <@displayMap gis_code="CPL"/>
+    <script type="text/javascript">//<![CDATA[
+    
+
+    //paramètres Sig
+    $(document).ready(function(){
+        var optionalParameters = {};
+        $("#carte").data('optionalParameters', optionalParameters);
+        showMap('CPL','carte');
+    });
+    //]]>
+    
+     // Add auto-completion
+     // $.getScript('jsp/plugins/address/modules/autocomplete/autocomplete-js.jsp',function(data, textStatus, jqxhr) {
+     //     createAutocomplete("#autocomplete");    
+     // });
+    </script>
+    
 </div>
+
 
