@@ -153,7 +153,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      * Method: cleanFeatures
      */
     cleanFeatures: function( ){
-    	
+    
     	if( this.displayedFeature != null ) {
         	this.draggableVectorLayer.removeFeatures(this.displayedFeature);
         	//this.displayedFeature.destroy();    		
@@ -184,6 +184,23 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 							$('.'+this.displayClass+'Field').show();
     					}
     				}
+    			},
+    			this)
+    		);
+    },
+    
+    /**
+     * Method: listenLocalisationCleanFeatureEvent
+     * 
+     * Properties:
+	 * event <Event>
+     */
+    listenLocalisationCleanFeatureEvent : function( event )
+    {
+    	$("body").bind("GisLocalization.clean", $.proxy( 
+    			function ( event ) {
+    		 		this.map.zoomToMaxExtent();
+    				this.cleanFeatures();
     			},
     			this)
     		);

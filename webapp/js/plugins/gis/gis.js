@@ -505,6 +505,7 @@
 
 		var geolocalizationPanel = new OpenLayers.Control.GeolocalizationPanel( options, map );
 		geolocalizationPanel.listenLocalizationSendEvent();
+		geolocalizationPanel.listenLocalisationCleanFeatureEvent();
 		
 		// Possibly add GeolocalizationPanel
 		if (eval(parameters['geolocalizationPanel'])){		
