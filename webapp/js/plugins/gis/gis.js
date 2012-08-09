@@ -822,7 +822,11 @@
     					}
     				});
     			});
-    		});
+    		});  		
+    		//Trigger an event when map is displayed.
+    		$('body').trigger( 
+    				jQuery.Event( 'GisMap.displayComplete',  {} ) 
+    		);
     }
 /*
     
