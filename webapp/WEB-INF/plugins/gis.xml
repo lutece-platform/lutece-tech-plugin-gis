@@ -3,7 +3,7 @@
     <!-- GIS plugin Informations -->
     <name>gis</name>
     <class>fr.paris.lutece.plugins.gis.service.GisPlugin</class>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
     <documentation/>
     <installation/>
     <changes/>
