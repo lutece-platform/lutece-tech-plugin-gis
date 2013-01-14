@@ -451,7 +451,16 @@
 
 		map.addLayers(layers);		 
 		
+
 		// Setup controls
+
+		
+// HAL 14/01/2013 - Start
+		if(eval(parameters['mousePosition'])) {
+ 			map.addControl( new OpenLayers.Control.MousePosition() );
+		}
+// HAL 14/01/2013 - End
+		
 		
 		if(eval(parameters['showPanZoomBar'])) {
  			map.addControl(new OpenLayers.Control.PanZoomBar({
