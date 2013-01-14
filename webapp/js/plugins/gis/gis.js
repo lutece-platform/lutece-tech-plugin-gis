@@ -438,6 +438,15 @@
 						});
 					}
 			}
+
+// HAL 14/01/2013 - Start
+				// Initialize an openStreetMap layer
+				if (parameters[layersNames[index] + '.type'] == 'osm') {
+					layers[index] = new OpenLayers.Layer.OSM();
+				}
+// HAL 14/01/2013 - End
+
+		
 		});
 
 		map.addLayers(layers);		 
