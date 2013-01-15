@@ -817,6 +817,10 @@
     				}
     			}});
     		});
+
+// HAL 15/01/2013 - Start	
+			map.zoomToExtent(new OpenLayers.Bounds(parameters['boundsLeft'], parameters['boundsBottom'], parameters['boundsRight'], parameters['boundsTop']));		
+// HAL 15/01/2013 - End			
     		
     		//Catch Event Redraw
     		$("body").bind( "Map.redraw", function() {
