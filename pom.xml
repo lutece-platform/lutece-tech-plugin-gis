@@ -10,7 +10,7 @@
 	<artifactId>plugin-gis</artifactId>
 	<packaging>lutece-plugin</packaging>
 	<version>2.0.2-SNAPSHOT</version>
-	<name>Lutece Geographic information system plugin</name>
+	<name>plugin-GIS - Lutece Geographic information system plugin</name>
 	
 	<repositories>
 		<repository>
