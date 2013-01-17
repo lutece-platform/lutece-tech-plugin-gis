@@ -1,6 +1,0 @@
-#Plugins status file
-#Wed Jan 16 09:41:54 CET 2013
-lucene.installed=1
-core_extensions.installed=1
-gis.pool=portal
-gis.installed=1
