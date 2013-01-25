@@ -819,7 +819,9 @@
     		});
 
 // HAL 15/01/2013 - Start	
-			map.zoomToExtent(new OpenLayers.Bounds(parameters['boundsLeft'], parameters['boundsBottom'], parameters['boundsRight'], parameters['boundsTop']));		
+// HAL 25/01/2013 - Start
+			map.zoomToExtent(new OpenLayers.Bounds(parameters['initialBoundsLeft'], parameters['initialBoundsBottom'], parameters['initialBoundsRight'], parameters['initialBoundsTop']));		
+// HAL 25/01/2013 - End			
 // HAL 15/01/2013 - End			
     		
     		//Catch Event Redraw
