@@ -219,7 +219,13 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     				this.getGeolocalization ( event.address, this.getSRID() );
     			},
     			this)
-    					
+    	);
+    	
+    	$("body").bind("GisLocalization.send.geolocalize.suggestPOI",  
+    			$.proxy( function ( event ) {
+    				this.drawFeatureOnWithPoi(event.poi);
+    			},
+    			this)
     	);
     },
     
@@ -243,7 +249,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      * lonLat - <Openlayers.LonLat>
      */
     addFeature: function( lonLat ){
-    	    	
+    	
     	var point = new OpenLayers.Geometry.Point( lonLat.lon, lonLat.lat );
     	
     	this.displayedFeature = new OpenLayers.Feature.Vector( point, lonLat );   
@@ -269,6 +275,23 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	var lat = Number(lonLat.substring(separator+1, lonLat.length));
     	
     	return new OpenLayers.LonLat( lon, lat );  	
+    },
+    
+    getLonLatFromPoi: function(poi) {
+    	// change proj sys
+    	var srid = this.map.getProjectionObject().getCode();
+    	var p = null;
+    	if ( poi.srid != undefined && poi.srid != "" && poi.srid != srid ) {
+			var source = new Proj4js.Proj(poi.srid);
+			var dest = new Proj4js.Proj(srid);
+			var p = new Proj4js.Point(poi.x, poi.y);   
+			Proj4js.transform(source, dest, p);
+    	}
+    	if (p != null) {
+    		return new OpenLayers.LonLat(p.x,p.y);
+    	} else {
+    		return new OpenLayers.LonLat(poi.x,poi.y);
+    	}
     },
     
     /**
@@ -302,6 +325,19 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     			'address': address,  		
     			'lonLat': { lon:lonLat.lon, lat:lonLat.lat },
     		    'inverse': inverse
+    	});
+    },
+    
+    drawFeatureOnWithPoi: function( poi ) {
+    	var lonLat = this.getLonLatFromPoi(poi);
+    	var address = poi.libelleTypo;
+    	this.cleanFeatures();
+    	this.addFeature(lonLat);
+    	// event send event if no data has been received
+    	this.triggerLocalizationEvent("GisLocalization.done", {
+    			'address': address,  		
+    			'lonLat': { lon:lonLat.lon, lat:lonLat.lat },
+    		    'inverse': false
     	});
     },
     
