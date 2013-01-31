@@ -18,9 +18,9 @@ Description des différents paramètres du pluginGIS disponible en version 2.0.1
 # Pour que le pluginGIS soit opérationnel, deux fichiers de configurations sont nécessaires et doivent être localisés dans
 # le répertoire "WEB-INF\conf\plugins" :
 # - gis.properties
-# - gis_<NOM_DE_CARTE>.properties
+# - gis_[NOM_DE_CARTE].properties
 #
-# <NOM_DE_CARTE> est un nom arbitraire respectant les règles de nommage (voir ci-dessous) qui permet d'identifier la carte à
+# [NOM_DE_CARTE] est un nom arbitraire respectant les règles de nommage (voir ci-dessous) qui permet d'identifier la carte à
 # afficher dans la page. Cette valeur est passé en paramètre HTTP dans la requête, utilisé par le code Javascript d'OpenLayer et
 # par le code Java de la partie serveur du pluginGIS. Ce nom doit donc être simple pour ne pas engendrer de difficulté lors de
 # l'utilisation par ces différents composants.
@@ -71,8 +71,8 @@ gis.view.serverName=http://localhost:8080/geoserver
 # ArcGIS Server	==> gis.view.featureNS=http://10.161.1.9/arcgis/services/BPPG/MapServer
 gis.view.featureNS=ankou
 
-# Clé de la vue, pour le <NOM_DE_CARTE> indiqué. Cette valeur sera utilisée pour définir tous les paramètres associés à cette vue dans le fichier
-# gis_<NOM_DE_CARTE>.properties
+# Clé de la vue, pour le [NOM_DE_CARTE] indiqué. Cette valeur sera utilisée pour définir tous les paramètres associés à cette vue dans le fichier
+# gis_[NOM_DE_CARTE].properties
 gis.view.FORMENGINE=1
 gis.view.RAM=2
 gis.view.BAG=3
