@@ -411,14 +411,14 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
      setMap: function(map) {
          OpenLayers.Control.prototype.setMap.apply(this, arguments);
-
+         
      	// create a new vector layer
      	this.draggableVectorLayer = new OpenLayers.Layer.Vector("Marker", {
      		displayInLayerSwitcher: false,
              styleMap: this.graphicStyle,
              rendererOptions: {zIndexing: true}
-        });     	
-
+        });
+     	
      	// create a new vector layer
      	this.vectorLayer = new OpenLayers.Layer.Vector("MarkerLimit", {
      		 displayInLayerSwitcher: false,
@@ -513,6 +513,24 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
         control.activate();
         this.map.addControl( this.selectControl );
         this.selectControl.activate();
+        
+        // ABE 01/02/2013 add global exposed variable start
+     	
+		//patern to use to recover maps objects
+		var $LUTECE = window.LUTECE || (window.LUTECE = {});
+		var $GIS = $LUTECE.GIS || ($LUTECE.GIS = {});
+		var $maps = $GIS.maps || ($GIS.maps = {});
+        
+		$maps[map.div.id] = { 
+			map: map,
+			geolocalizationMarkerLayers: [
+			                              this.draggableVectorLayer,
+			                              this.vectorLayer
+			]
+		};
+		
+         // ABE 01/02/2013 end
+        
      },
      
      /**
