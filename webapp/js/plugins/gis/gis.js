@@ -119,7 +119,7 @@
         // make OL compute scale according to WMS spec
         OpenLayers.DOTS_PER_INCH = 25.4 / 0.28;
     	mapId = idMap;
-
+    	
         var bounds;
         bounds = new OpenLayers.Bounds(
         		parameters['boundsLeft'], parameters['boundsBottom'],
@@ -521,14 +521,26 @@
 		};		
 		options['radius'] = parameters['geolocalizationPanel.radius'];
 
-		var geolocalizationPanel = new OpenLayers.Control.GeolocalizationPanel( options, map );
-		geolocalizationPanel.listenLocalizationSendEvent();
-		geolocalizationPanel.listenLocalisationCleanFeatureEvent();
 		
-		// Possibly add GeolocalizationPanel
-		if (eval(parameters['geolocalizationPanel'])){		
-			map.addControl( geolocalizationPanel );
+		
+		if (OpenLayers.Control.GeolocalizationPanel != undefined ) {
+			var geolocalizationPanel = new OpenLayers.Control.GeolocalizationPanel( options, map );
+			geolocalizationPanel.listenLocalizationSendEvent();
+			geolocalizationPanel.listenLocalisationCleanFeatureEvent();
+			
+			// Possibly add GeolocalizationPanel
+			if (eval(parameters['geolocalizationPanel'])){		
+				map.addControl( geolocalizationPanel );
+			}
 		}
+// ABE TO FIX
+		// TODO fix this default add StaticGeolocalizationControl if defined
+		if ( OpenLayers.Control.StaticGeolocalizationControl != undefined ) {
+			var staticGeolocalizationControl = new OpenLayers.Control.StaticGeolocalizationControl( options, map );
+			staticGeolocalizationControl.listenLocalizationSendEvent();
+			staticGeolocalizationControl.listenLocalisationCleanFeatureEvent();
+		}
+// ABE
 		
 		if(eval(parameters['overviewMap'])) {
 			map.addControl(new OpenLayers.Control.OverviewMap());
@@ -673,7 +685,9 @@
 				title: parameters['control.inverseGeolocalization.title']
 			});
 			
-			geolocalizationPanel.listenLocalizationDoneEvent();
+			if ( geolocalizationPanel != undefined ) {
+				geolocalizationPanel.listenLocalizationDoneEvent();
+			}
 			
 			inverseGeoButton.events.register("activate", this, function(e) {
 				if(map.zoom < parameters['control.inverseGeolocalization.minZoom']) 
