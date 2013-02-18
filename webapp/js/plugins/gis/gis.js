@@ -522,8 +522,8 @@
 		options['radius'] = parameters['geolocalizationPanel.radius'];
 
 		
-		
-		if (OpenLayers.Control.GeolocalizationPanel != undefined ) {
+		// add GeolocalizationPanel if defined
+		if ( typeof (OpenLayers.Control.GeolocalizationPanel) != "undefined" ) {
 			var geolocalizationPanel = new OpenLayers.Control.GeolocalizationPanel( options, map );
 			geolocalizationPanel.listenLocalizationSendEvent();
 			geolocalizationPanel.listenLocalisationCleanFeatureEvent();
@@ -533,14 +533,13 @@
 				map.addControl( geolocalizationPanel );
 			}
 		}
-// ABE TO FIX
-		// TODO fix this default add StaticGeolocalizationControl if defined
-		if ( OpenLayers.Control.StaticGeolocalizationControl != undefined ) {
+		
+		// add StaticGeolocalizationControl if defined
+		if ( typeof (OpenLayers.Control.StaticGeolocalizationControl) !== "undefined" ) {
 			var staticGeolocalizationControl = new OpenLayers.Control.StaticGeolocalizationControl( options, map );
 			staticGeolocalizationControl.listenLocalizationSendEvent();
 			staticGeolocalizationControl.listenLocalisationCleanFeatureEvent();
 		}
-// ABE
 		
 		if(eval(parameters['overviewMap'])) {
 			map.addControl(new OpenLayers.Control.OverviewMap());

@@ -209,5 +209,5 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
         OpenLayers.Event.stop(evt,true);
     },
     
-    CLASS_NAME: "OpenLayers.Control.StaticGeolocalizationControl",
+    CLASS_NAME: "OpenLayers.Control.StaticGeolocalizationControl"
 });
