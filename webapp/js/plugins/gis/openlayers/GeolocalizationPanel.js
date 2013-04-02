@@ -661,5 +661,5 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	
     	 this.div.appendChild(this.minimizeDiv);
     },
-    CLASS_NAME: "OpenLayers.Control.GeolocalizationPanel",
+    CLASS_NAME: "OpenLayers.Control.GeolocalizationPanel"
 });
