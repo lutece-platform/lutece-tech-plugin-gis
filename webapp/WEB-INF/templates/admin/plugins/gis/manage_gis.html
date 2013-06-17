@@ -3,15 +3,13 @@
 
 <!-- Fichier CSS utilisé pour l'auto complétion (déjà implémenté dans view1.html pour Plugin GIS) -->
 <!--<link rel="stylesheet" type="text/css" href="js/jquery/plugins/ui/css/jquery-ui.css"/>-->
-
-<div class="content-box" >
-
-    <h2>#i18n{gis.manage_features.pageTitle}</h2>
+<div class="row-fluid" >
+	<div class="span12">
+		<h2>#i18n{gis.manage_features.pageTitle}</h2>
 
     <@displayMap gis_code="CPL"/>
-    <script type="text/javascript">//<![CDATA[
-    
-
+    <script type="text/javascript">
+	//<![CDATA[
     //paramètres Sig
     $(document).ready(function(){
         var optionalParameters = {};
@@ -19,7 +17,6 @@
         showMap('CPL','carte');
     });
     //]]>
-    
      	//Ajout de l'auto complétion
         //La fonction creatreAutocomplete prend en parametre le selecteur du champ sur lequel s'applique l'auto complétion
         //$.getScript('js/jquery/plugins/ui/jquery.ui.custom-autocomplete.min.js');
@@ -27,7 +24,5 @@
 		//	createAutocomplete("#autocomplete"); 
 		//});
     </script>
-    
+    </div>
 </div>
-
-
