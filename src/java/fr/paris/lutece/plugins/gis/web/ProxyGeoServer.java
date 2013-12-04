@@ -33,13 +33,14 @@
  */
 package fr.paris.lutece.plugins.gis.web;
 
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-
 import java.net.HttpURLConnection;
 import java.net.URL;
-
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
@@ -64,10 +65,36 @@ public class ProxyGeoServer extends HttpServlet
     private ServletContext servletContext;
     private Logger log;
 
+    /**
+     * List of url allowed by the proxy
+     * (configured in /WEB-INF/conf/plugins/gis_proxyGeoServer.properties)
+     */
+    private List<String> whiteList;
+    
+    public static final String PROXY_PREFIX = "proxyGeoServer";
+    public static final String PARAMETER_WHITELIST = ".whitelist";
+    public static final String PARAMETER_ENTRY_URL = ".url";
+
     public void init( ServletConfig servletConfig ) throws ServletException
     {
         servletContext = servletConfig.getServletContext(  );
         log = Logger.getLogger( ProxyGeoServer.class.getName(  ) );
+        whiteList = new ArrayList<String>( );
+
+        // Get the proxy whitelist entries
+        String whitelist = AppPropertiesService.getProperty( PROXY_PREFIX + PARAMETER_WHITELIST );
+        if ( !whitelist.isEmpty( ) )
+        {
+            String[] whitelistEntries = whitelist.split( "," );
+            for ( String entry : whitelistEntries )
+            {
+                whiteList.add( AppPropertiesService.getProperty( PROXY_PREFIX + "." + entry + PARAMETER_ENTRY_URL ) );
+            }
+        }
+        else
+        {
+            log.info( "No configured whitelist on proxy." );
+        }
     }
 
     public void doGet( HttpServletRequest request, HttpServletResponse response )
@@ -95,10 +122,18 @@ public class ProxyGeoServer extends HttpServlet
 
             urlString += ( ( queryString == null ) ? "" : ( "?" + queryString ) );
             urlString = request.getParameter( "url" );
+            
+
+            if ( !whiteList.isEmpty( ) && !whiteList.contains( urlString ) )
+            {
+                log.warning( "The given URL is not allowed by proxy : " + urlString );
+                response.sendError( HttpServletResponse.SC_FORBIDDEN, urlString );
+                return;
+            }
 
             URL url = new URL( urlString );
 
-            log.info( "Fetching >" + url.toString(  ) );
+            log.info( "Fetching >" + url.toString( ) );
 
             con = (HttpURLConnection) url.openConnection(  );
 
