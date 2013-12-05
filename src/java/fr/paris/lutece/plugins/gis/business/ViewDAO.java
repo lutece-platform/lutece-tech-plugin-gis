@@ -59,8 +59,10 @@ public final class ViewDAO implements IViewDAO
     public String PARAMETER_SUFFIX_THEMATIC_LAYERS = "layers.thematic";
     public String PARAMETER_SUFFIX_SELECTABLE_LAYERS = "layers.selectable";
     public String PARAMETER_SUFFIX_STYLES = "styles";
-    public String PARAMETER_SUFFIX_STYLE_RULES = ".style.default.rules";
-    public String PARAMETER_SUFFIX_STYLE_RULE = ".style.default.";
+    public String PARAMETER_SUFFIX_DEFAULT_STYLE_RULES = ".style.default.rules";
+    public String PARAMETER_SUFFIX_SELECT_STYLE_RULES = ".style.select.rules";
+    public String PARAMETER_SUFFIX_DEFAULT_STYLE_RULE = ".style.default.";
+    public String PARAMETER_SUFFIX_SELECT_STYLE_RULE = ".style.select.";
     public String PARAMETER_SUFFIX_TEMPLATEFILE = ".templateFile";
     public String PARAMETER_SUFFIX_JSFILE = ".jsFile";
     public String PARAMETER_SUFFIX_PARAMETER = ".parameter.";
@@ -126,22 +128,41 @@ public final class ViewDAO implements IViewDAO
                         strLayerKey + "." + strKey, "" ) );
             }
 
-            String rulesList = AppPropertiesService.getProperty( GIS_VIEW + String.valueOf( key ) +
-                    PARAMETER_SUFFIX_PARAMETER + strLayerKey + PARAMETER_SUFFIX_STYLE_RULES, "" );
+            String defaultRulesList = AppPropertiesService.getProperty( GIS_VIEW + String.valueOf( key )
+                    + PARAMETER_SUFFIX_PARAMETER + strLayerKey + PARAMETER_SUFFIX_DEFAULT_STYLE_RULES, "" );
 
-            String[] rules = rulesList.split( "," );
+            String[] defaultRules = defaultRulesList.split( "," );
 
-            for ( String strRuleKey : rules )
+            for ( String strRuleKey : defaultRules )
             {
                 String[] stylesParameters = AppPropertiesService.getProperty( GIS_VIEW +
                         GIS_VIEW_AVAILABLEPARAMETERSSTYLERULES, "" ).split( "," );
 
                 for ( String strKey : stylesParameters )
                 {
-                    view.putParameter( strLayerKey + PARAMETER_SUFFIX_STYLE_RULE + strRuleKey + "." + strKey,
+                    view.putParameter( strLayerKey + PARAMETER_SUFFIX_DEFAULT_STYLE_RULE + strRuleKey + "." + strKey,
                         AppPropertiesService.getProperty( GIS_VIEW + String.valueOf( key ) +
-                            PARAMETER_SUFFIX_PARAMETER + strLayerKey + PARAMETER_SUFFIX_STYLE_RULE + strRuleKey + "." +
+                            PARAMETER_SUFFIX_PARAMETER + strLayerKey + PARAMETER_SUFFIX_DEFAULT_STYLE_RULE + strRuleKey + "." +
                             strKey, "" ) );
+                }
+            }
+
+            String selectRulesList = AppPropertiesService.getProperty( GIS_VIEW + String.valueOf( key )
+                    + PARAMETER_SUFFIX_PARAMETER + strLayerKey + PARAMETER_SUFFIX_SELECT_STYLE_RULES, "" );
+            String[] selectRules = selectRulesList.split( "," );
+
+            for ( String strRuleKey : selectRules )
+            {
+                String[] stylesParameters = AppPropertiesService.getProperty(
+                        GIS_VIEW + GIS_VIEW_AVAILABLEPARAMETERSSTYLERULES, "" ).split( "," );
+
+                for ( String strKey : stylesParameters )
+                {
+                    view.putParameter(
+                            strLayerKey + PARAMETER_SUFFIX_SELECT_STYLE_RULE + strRuleKey + "." + strKey,
+                            AppPropertiesService.getProperty( GIS_VIEW + String.valueOf( key )
+                                    + PARAMETER_SUFFIX_PARAMETER + strLayerKey + PARAMETER_SUFFIX_SELECT_STYLE_RULE
+                                    + strRuleKey + "." + strKey, "" ) );
                 }
             }
         }

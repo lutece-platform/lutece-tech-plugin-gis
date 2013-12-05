@@ -190,8 +190,8 @@ gis.view.1.parameter.layers.selectable=
 ############## PARAMETRES DES STYLES
 
 # Liste des styles disponibles. Favoriser la définition des styles côtés Serveur cartographiques via des fichiers SLD.
-# Exemple : style1,monStyleParDefaut,styleSelectedItems,searchResultStyle
-gis.view.1.parameter.styles=style1,monStyleParDefaut,styleSelectedItems,searchResultStyle
+# Exemple : style1,style2,monStyleParDefaut,styleSelectedItems,searchResultStyle
+gis.view.1.parameter.styles=style1,style2,monStyleParDefaut,styleSelectedItems,searchResultStyle
 
 # Diamètre du point affiché en pixel
 # Exemple : 5
@@ -273,9 +273,25 @@ gis.view.1.parameter.thematicMetier1.style.default.ajoutRule.filter={\\"type\\":
 # Exemple : style1
 gis.view.1.parameter.thematicMetier1.style.default.ajoutRule.style=style1
 
-# Nom du style pour les éléments sélectionnés.
+# Nom du style par défaut pour les éléments sélectionnés.
 # Exemple : styleSelectedItems
 gis.view.1.parameter.thematicMetier1.style.select=styleSelectedItems
+
+# Liste des règles pour le style sélectionné.
+# Exemple : regle1_s,regle2_s
+gis.view.1.parameter.thematicMetier1.style.select.rules=regle1_s,regle2_s
+
+# Nom de la règle.
+# Exemple : Point ajouté
+gis.view.1.parameter.thematicMetier1.style.select.regle1_s.name=Type 1
+
+# Définition du filtre OGC pour une règle.
+# Exemple : {\\"type\\":\\"==\\", \\"property\\":\\"statut_id\\", \\"value\\":\\"1\\"}
+gis.view.1.parameter.thematicMetier1.style.select.regle1_s.filter={\\"type\\":\\"==\\", \\"property\\":\\"type_id\\", \\"value\\":\\"1\\"}
+
+# Nom du style pour une règle
+# Exemple : style2
+gis.view.1.parameter.thematicMetier1.style.select.regle1_s.style=style2
 
 # Affiche ou cache la couche sur la carte.
 # Exemple : true

@@ -366,6 +366,35 @@
 							
 							defaultStyle.addRules(ruleArray);
 						}
+						
+// OBR - Start 
+						var selectedStyleRules;
+						if (parameters[layersNames[index] + '.style.select.rules'] != ''){
+							selectedStyleRules = parameters[layersNames[index] + '.style.select.rules'].split(",");
+						}
+						
+						if(selectedStyleRules != null){
+							var ruleArray = new Array();
+							ruleArray.push(new OpenLayers.Rule({
+				                   elseFilter: true
+				            }));
+							$.each(selectedStyleRules, function(indexRule, valueRule) {
+								var filter = getOGCFilter(parameters[layersNames[index] + '.style.select.' + valueRule + ".filter"]);
+								var name = parameters[layersNames[index] + '.style.select.' + valueRule + ".name"];
+								var symbolizer = getSymbolizer(globalParameters, parameters, parameters[layersNames[index] + '.style.select.' + valueRule + ".style"]);
+								if(filter != '' && symbolizer != null){
+									ruleArray.push(new OpenLayers.Rule({
+										filter: filter,
+										name: name,
+										symbolizer: symbolizer
+						               	}));
+								}
+							});
+							
+							selectStyle.addRules(ruleArray);
+						}
+// OBR - End
+						
 						htParameters['styleMap'] = new OpenLayers.StyleMap({
 							"default": defaultStyle,
 							"select": selectStyle
