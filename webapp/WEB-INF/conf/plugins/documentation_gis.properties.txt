@@ -223,7 +223,7 @@ gis.view.1.parameter.monStyleParDefaut.fillOpacity=0.6
 
 ############## PARAMETRES DE CONFIGURATION DES COUCHES
 
-# Type de données transmises : wms ou wfs.
+# Type de données transmises : wms, wfs, agscache, wmts, osm.
 # Exemple : wms
 gis.view.1.parameter.thematicMetier1.type=wms
 

@@ -5,7 +5,7 @@
 	var vectors;
 	var drawControls;
 	var selectedFeatureIds = new Array();
-    //Variable Fonction 
+    // Variable Fonction
     var maximizedMap = false;
 	var mapWidth = "";
 	var mapHeight = "";
@@ -23,14 +23,10 @@
 	 */	
 	
 	/**
-	 * Initialize the new map
-	 * globalParameters : The global parameters (
-	 * 		appProdUrl : The App production URL
-	 * 		serverName : url of the server
-	 * 		featureNS : The geoserver Namespace
-	 * 		...
-	 * ) 
-	 * parameters : map of parameters (defined in properties)
+	 * Initialize the new map globalParameters : The global parameters (
+	 * appProdUrl : The App production URL serverName : url of the server
+	 * featureNS : The geoserver Namespace ... ) parameters : map of parameters
+	 * (defined in properties)
 	 */
     $.fn.initMap = function(globalParameters, parameters) {
 		return this.each(function() {
@@ -39,8 +35,8 @@
 	}
 	
 	/**
-     * Destroy the new map
-     */
+	 * Destroy the new map
+	 */
      $.fn.destroy = function() {
 		triggerEvent("mapDestroyed");
 		$("#"+mapId).removeClass('olMap');
@@ -48,27 +44,26 @@
     }
     
     /**
-	 * return an Array containing the selected features ids
-	 * attributeName : The name of the attribute to retrieve
+	 * return an Array containing the selected features ids attributeName : The
+	 * name of the attribute to retrieve
 	 */
     $.fn.getSelectedFeaturesIds = function(attributeName) {
 		return selectedFeatureIds[attributeName]; 
 	}
     
     /**
-     * Get the coordinate of the feature in WKT format
-     * 
-     */
+	 * Get the coordinate of the feature in WKT format
+	 * 
+	 */
     $.fn.getWKT = function(feature) {
 		return new OpenLayers.Format.WKT().write(feature);
 	}
     
     /**
-     * Add a new point on the point Layer layer whit the specified coordinates
-     * pointObject : the point object
-     * coordX : the X coordinate
-     * coordY : the Y coordinate
-     */
+	 * Add a new point on the point Layer layer whit the specified coordinates
+	 * pointObject : the point object coordX : the X coordinate coordY : the Y
+	 * coordinate
+	 */
     $.fn.addPoint = function(pointObject, coordX, coordY) {
 		return this.each(function() {
 			addPoint(pointObject, coordX, coordY);
@@ -77,8 +72,8 @@
     
     
     /**
-     * Add a new Features on the point Layer layer
-     */
+	 * Add a new Features on the point Layer layer
+	 */
     $.fn.addFeaturesGeoJson = function(featurecollection) {
 		return this.each(function() {
 			addFeaturesGeoJson(featurecollection);
@@ -86,8 +81,8 @@
 	}
     
     /**
-     * Add a new Features on the point Layer layer
-     */
+	 * Add a new Features on the point Layer layer
+	 */
     $.fn.addFeaturesWKT = function(wkt) {
 		return this.each(function() {
 			addFeaturesWKT(wkt);
@@ -95,8 +90,8 @@
 	}
     
     /**
-     * 
-     */
+	 * 
+	 */
     $.fn.toggleControl = function(value) { 
 		return this.each(function() {
 			toggleControl(value);
@@ -106,35 +101,73 @@
 	 * Private methods
 	 */	
     
-    /*appProdUrl, serverName, featureNS
-     * Initialize the new map with the informations specified in properties
-     */
+    /*
+	 * appProdUrl, serverName, featureNS Initialize the new map with the
+	 * informations specified in properties
+	 */
     function initMap(idMap, globalParameters, parameters){
-		if ($("#"+idMap).attr('class').contains("olMap")){ 
+// OBR - Start
+    	// String.contains() not supported by IE & Chrome since openlayers
+		// 2.13.1 migration
+		// if ($("#"+idMap).attr('class').contains("olMap")){
+		// return false;
+		// }
+
+    	if ($("#"+idMap).attr('class').indexOf("olMap")>=0){ 
 			return false;
 		}
+// OBR - End
+    	
     	OpenLayers.ProxyHost = globalParameters['appProdUrl'] + "proxyGeoServer?url=";
-    	//--------------------------------------
+    	// --------------------------------------
     	OpenLayers.IMAGE_RELOAD_ATTEMPTS = 5;
         // make OL compute scale according to WMS spec
         OpenLayers.DOTS_PER_INCH = 25.4 / 0.28;
     	mapId = idMap;
     	
-        var bounds;
-        bounds = new OpenLayers.Bounds(
-        		parameters['boundsLeft'], parameters['boundsBottom'],
-        		parameters['boundsRight'], parameters['boundsTop']
-            );
         var numZoomLevels= parseInt(parameters['numZoomLevels']);
+        var options;
+        // option fallThrough must be set to true since OpenLayers 2.13 in order
+        // to get the opacity slider to work
+        options = {controls: [],
+        			numZoomLevels: numZoomLevels,
+        			projection: parameters['projection'],
+	        		fallThrough: true};
         
-        var options = {
-        		controls: [],
-        		numZoomLevels: numZoomLevels,
-        		maxExtent: bounds,
-        		projection: parameters['projection'],
-                units: parameters['units'],
-                maxResolution: parameters['maxResolution']
-        };
+        var bounds=null;
+        if(parameters['boundsLeft'] != '' && parameters['boundsBottom'] != ''  &&
+        		parameters['boundsRight'] != '' && parameters['boundsTop'] != '' ){
+	        bounds = new OpenLayers.Bounds(
+	        		parameters['boundsLeft'], parameters['boundsBottom'],
+	        		parameters['boundsRight'], parameters['boundsTop']
+	            );
+        }
+        
+        // check if projection belongs to world mercator (simplifies the
+		// configuration)
+        if(parameters['projection'] == "EPSG:900913" || 
+        		parameters['projection'] == "EPSG:3857" ||
+        		parameters['projection'] == "EPSG:102113" || 
+        		parameters['projection'] == "EPSG:102100"){
+        	if(bounds != null)
+        		options['maxExtent'] = bounds;
+        	if(parameters['units'] != '')
+        		options['units'] = parameters['units'];
+        	if(parameters['maxResolution'] != '')
+        		options['maxResolution'] = parameters['maxResolution'];
+    	}
+	    else{
+	    	if(bounds != null &&
+	    			parameters['units'] != '' &&
+	    			parameters['maxResolution'] != ''){
+		        options['maxExtent'] = bounds;
+		        options['units'] = parameters['units'];
+		        options['maxResolution'] = parameters['maxResolution'];
+	    	}
+	    	else{
+	    		return false;
+	    	}
+	    }
         
         if(eval(parameters['resolution.enabled'])) {
             var res = parameters['resolution.grid'].split(",");
@@ -143,13 +176,12 @@
             });
             options['resolutions'] = res;
         }
-        
+             
         map = new OpenLayers.Map(idMap, options);
-
+        
         var styles = initStyles(globalParameters, parameters);
         
-        
-        //Layers array defined in properties
+        // Layers array defined in properties
         var layersNames = (parameters['layers.base'] + ((parameters['layers.thematic'] != '') ? "," : "") + parameters['layers.thematic'] + ((parameters['layers.selectable'] != '') ? "," : "") + parameters['layers.selectable']).split(",");
         var baseLayersNames = parameters['layers.base'].split(",");
         var selectableLayersNames = (parameters['layers.selectable'] + ((parameters['layers.thematic'] != '') ? "," : "") + parameters['layers.thematic']).split(",");
@@ -160,49 +192,53 @@
 		var opacityLayers = new Array();
 		
 		$.each(layersNames, function(index, value) {
-			//Convert the filter to the openLayer.filter format 
+			// Convert the filter to the openLayer.filter format
 				if (parameters[layersNames[index] +'.ogcFilter'] != undefined) {
-					/* 
-					 * OGC Filter Json
-					 * operator : {"logical":'or/and...', "criteria1":'filter1', "criteria2":'filter2'}
-					 * filter : {"type":'equal_to/....', "property":'field', "value":'fieldValue'}
+					/*
+					 * OGC Filter Json operator : {"logical":'or/and...',
+					 * "criteria1":'filter1', "criteria2":'filter2'} filter :
+					 * {"type":'equal_to/....', "property":'field',
+					 * "value":'fieldValue'}
 					 */
-					//we have to add the logical operator AND if there is only one filter (no logical operator)
+					// we have to add the logical operator AND if there is only
+					// one filter (no logical operator)
 					
 					parameters[layersNames[index] + '.filter'] = getOGCFilter(parameters[layersNames[index] + '.ogcFilter']);
 				}
 				
-				//Helper to get parameter from layer parameters, view parameters or global parameters
+				// Helper to get parameter from layer parameters, view
+				// parameters or global parameters
 				var getParameter = function ( name ) {
 					
 					var exists = function (map, key) { return (map[key] != undefined && map[key] != ''); }
 					
 					var param = '';
-					//layer parameters
+					// layer parameters
 					if ( exists(parameters,layersNames[index] + '.' + name) ){
 						param = parameters[layersNames[index] + '.' + name]; 
-					//view parameters
+					// view parameters
 					}else if ( exists(parameters,name) ){
 						param = parameters[name];
-					//global parameters
+					// global parameters
 					}else{
 						param = globalParameters[name];
 					}
 					return param;
 				}
-				//Initialize request parameters
+				// Initialize request parameters
 				var serverName = getParameter( 'serverName' );						
 				var featureNS = getParameter( 'featureNS' );
 				var wms = getParameter( 'wms' );
 				var wfs = getParameter( 'wfs' );
 				var format = getParameter( 'format' );
 				
-				//Initialize a new WMS Layer
+				// Initialize a new WMS Layer
 				if (parameters[layersNames[index] + '.type'] == 'wms') {
 					
 					server = serverName + wms;
 					
-					//An object with key/value pairs representing the GetMap query string parameters and parameter values
+					// An object with key/value pairs representing the GetMap
+					// query string parameters and parameter values
 					var htParameters = {};
 					htParameters['layers'] = parameters[layersNames[index] + '.layer'];
 					htParameters['format'] = format;
@@ -214,7 +250,7 @@
 						htParameters['cql_Filter'] = parameters[layersNames[index] + '.cqlFilter'];
 					}
 					
-					//Hashtable of extra options to tag onto the layer
+					// Hashtable of extra options to tag onto the layer
 					var htOptions = {};
 										
 					htOptions['buffer'] = 0;
@@ -237,7 +273,7 @@
 					){
 						htOptions['legendTitle']=parameters[layersNames[index] + '.legendTitle'];
 					}
-					// GetLegendGraphic 
+					// GetLegendGraphic
 					if (htOptions['displayInLegend'] && !htParameters['isBaseLayer'] ) {
 					
 						htOptions['styleMap'] = new OpenLayers.StyleMap();
@@ -268,10 +304,10 @@
 						htOptions['legendGraphicURI'] = legendGraphicURI;					
 					}
 					
-					//SearchFeature	
+					// SearchFeature
 					if( !htParameters['isBaseLayer']){
 						htOptions['isSearchableLayer'] = eval(parameters[layersNames[index] + '.isSearchable']) ? true : false;
-						//Initialize search feature options
+						// Initialize search feature options
 						if( htOptions['isSearchableLayer'] ){
 							htOptions['searchWFSParameters'] = { 
 									url:serverName + parameters['wfs'],
@@ -306,7 +342,8 @@
 					
 					server = serverName + wfs;
 					
-					// allow testing of specific renderers via "?renderer=Canvas", etc
+					// allow testing of specific renderers via
+					// "?renderer=Canvas", etc
 					var renderer = OpenLayers.Util.getParameters(window.location.href).renderer;
 					renderer = (renderer) ? [renderer] : OpenLayers.Layer.Vector.prototype.renderers;
 					
@@ -341,17 +378,18 @@
 							selectStyle = styles[parameters[layersNames[index] + '.style.select']];
 						}
 						
-						var styleRules;
+						var defaultStyleRules;
 						if (parameters[layersNames[index] + '.style.default.rules'] != ''){
-							styleRules = parameters[layersNames[index] + '.style.default.rules'].split(",");
+							defaultStyleRules = parameters[layersNames[index] + '.style.default.rules'].split(",");
 						}
+
 						
-						if(styleRules != null){
+						if(defaultStyleRules != null){
 							var ruleArray = new Array();
 							ruleArray.push(new OpenLayers.Rule({
 				                   elseFilter: true
 				            }));
-							$.each(styleRules, function(indexRule, valueRule) {
+							$.each(defaultStyleRules, function(indexRule, valueRule) {
 								var filter = getOGCFilter(parameters[layersNames[index] + '.style.default.' + valueRule + ".filter"]);
 								var name = parameters[layersNames[index] + '.style.default.' + valueRule + ".name"];
 								var symbolizer = getSymbolizer(globalParameters, parameters, parameters[layersNames[index] + '.style.default.' + valueRule + ".style"]);
@@ -394,7 +432,6 @@
 							selectStyle.addRules(ruleArray);
 						}
 // OBR - End
-						
 						htParameters['styleMap'] = new OpenLayers.StyleMap({
 							"default": defaultStyle,
 							"select": selectStyle
@@ -402,11 +439,11 @@
 						
 					}
 					
-					// Filter 
+					// Filter
 					if (parameters[layersNames[index] + '.filter'] != '') 
 						htParameters['filter'] = parameters[layersNames[index] + '.filter'];
 					
-					// Visibility 
+					// Visibility
 					htParameters['visibility'] = eval(parameters[layersNames[index] + '.visibility']) ? true : false;
 					
 					// Display In LayerSwitcher
@@ -426,7 +463,7 @@
 					// Create the new WFS Layer
 					layers[index] = new OpenLayers.Layer.Vector(parameters[layersNames[index] + '.name'], htParameters);
 					
-					//add some events for selectables layers
+					// add some events for selectables layers
 					if (jQuery.inArray(value, selectableLayersNames) != -1) {
 						selectableLayers.push(layers[index]);
 						var attributesToRetrieve = parameters[layersNames[index] + '.selectable.attributesToRetrieve'].split(",");
@@ -475,11 +512,154 @@
 				}
 // HAL 14/01/2013 - End
 
+// OBR - Start 
+				// Initialise ArcGIS cache layer
+				if (parameters[layersNames[index] + '.type'] == 'agscache') {
+					// Check mandatory values
+					if(parameters[layersNames[index] + '.name'] == '' ||
+							(parameters[layersNames[index] + '.agscache.url'] == '' && serverName == '') ||
+							(parameters[layersNames[index] + '.resolutions'] == '' && parameters['resolution.grid'] == '') ||
+							parameters[layersNames[index] + '.agscache.tileOrigin'] == ''){
+						return false;
+					}
+					try{
+						// check server url from gis.properties or overridden
+						// configuration from gis_CODE.properties
+						var url;
+						if(parameters[layersNames[index] + '.agscache.url'] != ''){
+							url = parameters[layersNames[index] + '.agscache.url'];
+						}
+						else{
+							url = serverName;
+						}
+						
+						var htParameters = {};	
+						
+						var tabOrigin = parameters[layersNames[index] + '.agscache.tileOrigin'].split(",");
+						htParameters['tileOrigin'] = new OpenLayers.LonLat(tabOrigin[0], tabOrigin[1]);
+						
+						if(parameters[layersNames[index] + '.agscache.tileSize'] != ''){
+							var tabSize = parameters[layersNames[index] + '.agscache.tileSize'].split(",");
+							htParameters['tileSize'] = new OpenLayers.Size(tabSize[0], tabSize[1]);
+						}
+					
+						// use map projection
+		                htParameters['projection'] = map.projection;
+						// use map bounds
+						htParameters['maxExtent'] = map.maxExtent;
+		                htParameters['useArcGISServer'] = false;
+		                htParameters['isBaseLayer'] = (jQuery.inArray(value, baseLayersNames) == -1) ? false : true;;
+		                
+	
+						// Display In LayerSwitcher
+						htParameters['displayInLayerSwitcher'] = eval(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
+						// Display in Legend
+						htParameters['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
+						if (parameters[layersNames[index] + '.legendTitle'] != undefined &&
+								parameters[layersNames[index] + '.legendTitle'] != ''){
+							htParameters['legendTitle'] = parameters[layersNames[index] + '.legendTitle'];
+						}
+						// Visibility
+						htParameters['visibility'] = eval(parameters[layersNames[index] + '.visibility']) ? true : false;					
+						// Scale
+						if (parameters[layersNames[index] + '.minScale'] != '') 
+							htParameters['minScale'] = parameters[layersNames[index] + '.minScale'];
+						if (parameters[layersNames[index] + '.maxScale'] != '') 
+							htParameters['maxScale'] = parameters[layersNames[index] + '.maxScale'];
+						
+						layers[index] = new OpenLayers.Layer.ArcGISCache(
+								parameters[layersNames[index] + '.name'], url, htParameters);
+						
+						// Add an opacity slider if the layer is thematic 
+						if (jQuery.inArray(value, selectableLayersNames) != -1) {
+							opacityLayers.push(layers[index]);
+						}
+						// Strictly restrict the map extent to the arcgis extent to avoid navigation "jumps"
+						map.restrictedExtent = map.maxExtent;
+					}
+					catch(err){
+						return false;
+					}
+				}
+				
+				// Initialise WMTS cache Layer
+				if (parameters[layersNames[index] + '.type'] == 'wmts') {
+					// check for mandatory configuration entries
+					if(parameters[layersNames[index] + '.name'] == '' ||
+							(parameters[layersNames[index] + '.wmts.url'] == '' && serverName == '') ||
+							parameters[layersNames[index] + '.wmts.layer'] == '' ||
+							parameters[layersNames[index] + '.wmts.matrixSet'] == ''){
+						return false;
+					}
+					
+					try{
+						var htParameters = {};	
+						htParameters['name'] = parameters[layersNames[index] + '.name'];
+						
+						// check server url from gis.properties or overridden
+						// configuration from gis_CODE.properties
+						if(parameters[layersNames[index] + '.wmts.url'] != ''){
+							htParameters['url'] = parameters[layersNames[index] + '.wmts.url'];
+						}
+						else{
+							htParameters['url'] = serverName;
+						}	
+						
+						htParameters['layer'] = parameters[layersNames[index] + '.wmts.layer'];
+						htParameters['matrixSet'] = parameters[layersNames[index] + '.wmts.matrixSet'];
+	                	htParameters['style'] = parameters[layersNames[index] + '.wmts.style'];
+		                
+		                // use map maxExtent
+		                htParameters['maxExtent'] = map.maxExtent;	    
+						// use map projection
+		                htParameters['projection'] = map.projection;
+		                htParameters['isBaseLayer'] = (jQuery.inArray(value, baseLayersNames) == -1) ? false : true;
+						
+		                // Tile origin
+		                if(parameters[layersNames[index] + '.wmts.tileOrigin'] != ''){
+		                	var tabOrigin = parameters[layersNames[index] + '.wmts.tileOrigin'].split(",");
+		                	htParameters['tileOrigin'] = new OpenLayers.LonLat(tabOrigin[0],tabOrigin[1]);
+		                }
+		                
+		                // Matrix IDs
+		                if(parameters[layersNames[index] + '.wmts.matrixIds'] != '')
+		                	htParameters['matrixIds'] = parameters[layersNames[index] + '.wmts.matrixIds'].split(",");            
+		                
+		                // use map format
+	                	htParameters['format'] = format;
 		
+						// Display In LayerSwitcher
+						htParameters['displayInLayerSwitcher'] = eval(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
+						// Display in Legend
+						htParameters['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
+						if (parameters[layersNames[index] + '.legendTitle'] != undefined &&
+								parameters[layersNames[index] + '.legendTitle'] != ''){
+							htParameters['legendTitle'] = parameters[layersNames[index] + '.legendTitle'];
+						}
+						// Visibility
+						htParameters['visibility'] = eval(parameters[layersNames[index] + '.visibility']) ? true : false;					
+						// Scale
+						if (parameters[layersNames[index] + '.minScale'] != '') 
+							htParameters['minScale'] = parameters[layersNames[index] + '.minScale'];
+						if (parameters[layersNames[index] + '.maxScale'] != '') 
+							htParameters['maxScale'] = parameters[layersNames[index] + '.maxScale'];
+						
+						// Layer creation
+						layers[index] = new OpenLayers.Layer.WMTS(htParameters);
+						
+						// Add an opacity slider if the layer is thematic 
+						if (jQuery.inArray(value, selectableLayersNames) != -1) {
+							opacityLayers.push(layers[index]);
+						}
+					}
+					catch(err){
+						return false;
+					}
+				}
+// OBR - End 
 		});
 
-		map.addLayers(layers);		 
-		
+		map.addLayers(layers);	
 
 		// Setup controls
 
@@ -498,7 +678,10 @@
 		}
 				
 		if(eval(parameters['navigation'])) {
-			map.addControl(new OpenLayers.Control.Navigation({mouseWheelOptions: {interval: 800000, cumulative : false}}));
+			map.addControl(new OpenLayers.Control.Navigation(
+						{mouseWheelOptions: {interval: 800000, cumulative : false},
+						
+					}));
 		}
 		
 		if( eval(parameters['layerSwitcher']) ) {
@@ -514,7 +697,7 @@
 			);
 		}
 		
-		// Possibly add LayerSearchPanel		
+		// Possibly add LayerSearchPanel
 		if (eval(parameters['layerSearchPanel'])) 
 		{			
 			var layerSearchPanel = new OpenLayers.Control.LayerSearchPanel();		
@@ -583,7 +766,7 @@
 		if(eval(parameters['control.scaleLine'])) {
 			var scaleLine = new OpenLayers.Control.ScaleLine();
 			
-			//Scale needs to be calculated for the SRID 4326
+			// Scale needs to be calculated for the SRID 4326
 			if(map.getProjectionObject().getCode() == "EPSG:4326") {
 				scaleLine.geodesic = true;
 			}
@@ -606,9 +789,16 @@
 			trigger: printMap, 
 			title: parameters['control.control.title']
 		});
+
+// OBR - Start 
+// -- DEPRECATED
+// mouse = new OpenLayers.Control.MouseDefaults(
+// {title:parameters['control.mouse.title']});
 		
-		mouse = new OpenLayers.Control.MouseDefaults(
-				 {title:parameters['control.mouse.title']});
+		mouse = new OpenLayers.Control.Navigation({
+			title:parameters['control.mouse.title'],
+		});
+// OBR - End
 		
 		if(selectableLayers.length > 0) {
 		var point= new OpenLayers.Control.DrawFeature(
@@ -681,15 +871,12 @@
 				
 			// Bug Openlayers 2.10
 			/*
-			modifyFeatureControl.events.register("featuremodified", this, function(e) {
-				if (confirm(parameters['control.modify.confirm'])) {
- 					//selectableLayers.removeFeatures([e.feature]);
- 					triggerEvent("featuremodified",e.feature);
- 				} else {
- 					modifyFeatureControl.unselect(e.feature);
- 				}
- 			});
- 			*/ 
+			 * modifyFeatureControl.events.register("featuremodified", this,
+			 * function(e) { if (confirm(parameters['control.modify.confirm'])) {
+			 * //selectableLayers.removeFeatures([e.feature]);
+			 * triggerEvent("featuremodified",e.feature); } else {
+			 * modifyFeatureControl.unselect(e.feature); } });
+			 */ 
 			deleteFeatureControl.events.register("featurehighlighted", this, function(e) {
 				if (confirm(parameters['control.delete.confirm'])) {
 					var result = triggerEvent("featuredeleted",e.feature);
@@ -703,7 +890,7 @@
 		}
 		var controlList = new Array();
 		
-		//Inverse Geolocalization
+		// Inverse Geolocalization
 		if(	eval( parameters['control.inverseGeolocalization'] ))
 		{		
 			var inverseGeoButton = new OpenLayers.Control.Button({
@@ -743,7 +930,8 @@
 			controlList.push(inverseGeoButton);
 		}
 		 
-		// Manages the mouse single click event to get features info from WMS layers.
+		// Manages the mouse single click event to get features info from WMS
+		// layers.
 		if(	eval( parameters['control.identify'] ) && 
 			typeof( identifiableLayer['layers'] ) != 'undefined'
 		) {     
@@ -845,32 +1033,34 @@
                 offImages[i].src = parameters['imagePath'] + roots[i] + "_off.png";
             }
             
-          //Create slider opacity for each thematics layer
+          // Create slider opacity for each thematics layer
     		$.each(opacityLayers, function(index,value){
     			var sliderId = "#slider_"+index;
     			var sliderOpacity = jQuery(sliderId);
-
     			opacityLayers[index].setOpacity(0.75);
-    			sliderOpacity.slider({value:75, slide: function(event, ui) {
-    				if (ui.value != 0) {
-    					opacityLayers[index].setOpacity(ui.value/100);
-    				} else {
-    					opacityLayers[index].setOpacity(0);
+    			sliderOpacity.slider({
+    				value:75, 
+    				slide: function(event, ui) {
+	    				if (ui.value != 0) {
+	    					opacityLayers[index].setOpacity(ui.value/100);
+	    				} else {
+	    					opacityLayers[index].setOpacity(0);
+	    				}
     				}
-    			}});
+    			});
     		});
 
-// HAL 15/01/2013 - Start	
+// HAL 15/01/2013 - Start
 // HAL 25/01/2013 - Start
 			map.zoomToExtent(new OpenLayers.Bounds(parameters['initialBoundsLeft'], parameters['initialBoundsBottom'], parameters['initialBoundsRight'], parameters['initialBoundsTop']));		
-// HAL 25/01/2013 - End			
-// HAL 15/01/2013 - End			
+// HAL 25/01/2013 - End
+// HAL 15/01/2013 - End
     		
-    		//Catch Event Redraw
+    		// Catch Event Redraw
     		$("body").bind( "Map.redraw", function() {
     			/*
-    			 * Redraw sliders
-    			 */
+				 * Redraw sliders
+				 */
     			$.each(opacityLayers, function(index,value){
     				var sliderId = "#slider_"+index;
     				var sliderOpacity = jQuery(sliderId);
@@ -889,30 +1079,23 @@
     				});
     			});
     		});  		
-    		//Trigger an event when map is displayed.
+    		// Trigger an event when map is displayed.
     		$('body').trigger( 
     				jQuery.Event( 'GisMap.displayComplete',  {} ) 
     		);
     }
 /*
-    
-    // preload images
-        (function() {
-            var roots = parameters['imageUsed'].split(",");;
-            var onImages = [];
-            var offImages = [];
-            for(var i=0; i<roots.length; ++i) {
-                onImages[i] = new Image();
-                onImages[i].src = parameters['imagePath'] + roots[i] + "_on.png";
-                offImages[i] = new Image();
-                offImages[i].src = parameters['imagePath'] + roots[i] + "_off.png";
-            }
-        })();
-        
-		*/
+ * // preload images (function() { var roots =
+ * parameters['imageUsed'].split(",");; var onImages = []; var offImages = [];
+ * for(var i=0; i<roots.length; ++i) { onImages[i] = new Image();
+ * onImages[i].src = parameters['imagePath'] + roots[i] + "_on.png";
+ * offImages[i] = new Image(); offImages[i].src = parameters['imagePath'] +
+ * roots[i] + "_off.png"; } })();
+ * 
+ */
     /*
-     * Add a new point on the vectors layer
-     */
+	 * Add a new point on the vectors layer
+	 */
     function addPoint(layer,pointObject, coordX, coordY) {
     	pointObject = new OpenLayers.Feature.Vector(
     			new OpenLayers.Geometry.Point(coordX, coordY)
@@ -922,16 +1105,16 @@
     }
     
     /*
-     * Add a new features on the vectors layer
-     */
+	 * Add a new features on the vectors layer
+	 */
     function addFeaturesGeoJson(layer,featurecollection) {
     	var geojson_format = new OpenLayers.Format.GeoJSON();
     	layer.addFeatures(geojson_format.read(featurecollection));
     }
     
     /*
-     * Add a new features on the vectors layer
-     */
+	 * Add a new features on the vectors layer
+	 */
     function addFeaturesWKT(layer,wkt) {
     	var wkt_format = new OpenLayers.Format.WKT();
     	layer.addFeatures(wkt_format.read(wkt));
@@ -947,7 +1130,7 @@
 	}
 	
 	function onPopupClose(evt) {
-	    // 'this' is the popup. 
+	    // 'this' is the popup.
 		this.destroy();
 	}
 
@@ -1019,10 +1202,11 @@
 	}
 	
 	
-	/* Convert a json to an OGC Filter
-	 * OGC Filter Json
-	 * operator : {"logical":'or/and...', "criteria1":'filter1', "criteria2":'filter2'}
-	 * filter : {"type":'equal_to/....', "property":'field', "value":'fieldValue'}
+	/*
+	 * Convert a json to an OGC Filter OGC Filter Json operator :
+	 * {"logical":'or/and...', "criteria1":'filter1', "criteria2":'filter2'}
+	 * filter : {"type":'equal_to/....', "property":'field',
+	 * "value":'fieldValue'}
 	 */
 	function json2Filter(jsonFilter){ 
 		var operator = '';		
@@ -1064,28 +1248,28 @@
 				return in_filter;
 			}else{
 				switch (jsonFilter.type) {
-					case '==': //EQUAL_TO
+					case '==': // EQUAL_TO
 						filter['type'] = OpenLayers.Filter.Comparison.EQUAL_TO;
 						break;
-					case '!=': //NOT_EQUAL_TO
+					case '!=': // NOT_EQUAL_TO
 						filter['type'] = OpenLayers.Filter.Comparison.NOT_EQUAL_TO;
 						break;
-					case '<': //LESS_THAN
+					case '<': // LESS_THAN
 						filter['type'] = OpenLayers.Filter.Comparison.LESS_THAN;
 						break;
-					case '>': //GREATER_THAN
+					case '>': // GREATER_THAN
 						filter['type'] = OpenLayers.Filter.Comparison.GREATER_THAN;
 						break;
-					case '<=': //LESS_THAN_OR_EQUAL_TO
+					case '<=': // LESS_THAN_OR_EQUAL_TO
 						filter['type'] = OpenLayers.Filter.Comparison.LESS_THAN_OR_EQUAL_TO;
 						break;
-					case '>=': //GREATER_THAN_OR_EQUAL_TO
+					case '>=': // GREATER_THAN_OR_EQUAL_TO
 						filter['type'] = OpenLayers.Filter.Comparison.GREATER_THAN_OR_EQUAL_TO;
 						break;
-					case '..': //BETWEEN
+					case '..': // BETWEEN
 						filter['type'] = OpenLayers.Filter.Comparison.BETWEEN;
 						break;
-					case '~': //LIKE
+					case '~': // LIKE
 						filter['type'] = OpenLayers.Filter.Comparison.EQUAL_TO;
 						break; 
 					
@@ -1104,28 +1288,31 @@
 		if (maximizedMap) {
 			jQuery("#"+mapId).animate({ left: mapPosition.left+"px", top: mapPosition.top+"px", height:mapHeight+"px", width:mapWidth+"px"  }, 00);
 			jQuery("#"+mapId).css({ position: "relative", left: "0px", top: "0px", 'z-index': '0' });
-			$('html,body').animate({scrollTop: scrollTopValue}, '0');
+			$('html,body').animate({scrollTop: scrollTopValue}, '0', null, function() {
+				// Force refresh in case of missing tiles after maximize.
+				map.updateSize();	
+			});
 			maximizedMap=false;
          }
-         else { 
+        else { 
 // OBR - Start
- 			scrollTopValue = $(window).scrollTop();
- 	        jQuery("#"+mapId).css({ position:"absolute", left: mapPosition.left+"px", top: mapPosition.top+"px"});
- 	    	if(jQuery(".navbar-inner")[0] && jQuery("#footer")[0]){
- 	          	var headerHeight = jQuery(".navbar-inner").height()+10;
- 	        	var footerHeight = jQuery("#footer").height()+10;
- 	            jQuery("#"+mapId).animate({'z-index': '100', left: "10px", top: headerHeight+"px", height: (jQuery(window).height()-footerHeight-headerHeight) +"px", width: (jQuery(window).width()-20) +"px"  }, 600);
- 	    	}
- 	    	else{
- 	            jQuery("#"+mapId).animate({'z-index': '100', left: "10px", top: "10px",height: (jQuery(window).height()-20) +"px", width: (jQuery(window).width()-20) +"px"  }, 600);
- 	    	}
- 			$('html,body').animate({scrollTop: 0}, '600', null, function() {
- 				// Force refresh in case of missing tiles after maximize.
- 				map.updateSize();	
- 			});
- 			maximizedMap=true;
+			scrollTopValue = $(window).scrollTop();
+	        jQuery("#"+mapId).css({ position:"absolute", left: mapPosition.left+"px", top: mapPosition.top+"px"});
+	    	if(jQuery(".navbar-inner")[0] && jQuery("#footer")[0]){
+	          	var headerHeight = jQuery(".navbar-inner").height()+10;
+	        	var footerHeight = jQuery("#footer").height()+10;
+	            jQuery("#"+mapId).animate({'z-index': '100', left: "10px", top: headerHeight+"px", height: (jQuery(window).height()-footerHeight-headerHeight) +"px", width: (jQuery(window).width()-20) +"px"  }, 600);
+	    	}
+	    	else{
+	            jQuery("#"+mapId).animate({'z-index': '100', left: "10px", top: "10px",height: (jQuery(window).height()-20) +"px", width: (jQuery(window).width()-20) +"px"  }, 600);
+	    	}
+			$('html,body').animate({scrollTop: 0}, '600', null, function() {
+				// Force refresh in case of missing tiles after maximize.
+				map.updateSize();	
+			});
+			maximizedMap=true;
 // OBR - End
-         }       
+         }        
 	}
 	
 	function printMap(){
