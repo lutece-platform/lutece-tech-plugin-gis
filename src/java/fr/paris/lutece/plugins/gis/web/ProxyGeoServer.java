@@ -74,13 +74,13 @@ public class ProxyGeoServer extends HttpServlet
      * List of url allowed by the proxy
      * (configured in /WEB-INF/conf/plugins/gis_proxyGeoServer.properties)
      */
-    private List<String> whiteList;
+    private List<String> _whiteList;
 
     public void init( ServletConfig servletConfig ) throws ServletException
     {
         servletContext = servletConfig.getServletContext(  );
         log = Logger.getLogger( ProxyGeoServer.class.getName(  ) );
-        whiteList = new ArrayList<String>( );
+        _whiteList = new ArrayList<String>( );
 
         // Get the proxy whitelist entries
         String whitelist = AppPropertiesService.getProperty( PROXY_PREFIX + PARAMETER_WHITELIST );
@@ -89,7 +89,7 @@ public class ProxyGeoServer extends HttpServlet
             String[] whitelistEntries = whitelist.split( "," );
             for ( String entry : whitelistEntries )
             {
-                whiteList.add( AppPropertiesService.getProperty( PROXY_PREFIX + "." + entry + PARAMETER_ENTRY_URL ) );
+                _whiteList.add( AppPropertiesService.getProperty( PROXY_PREFIX + "." + entry + PARAMETER_ENTRY_URL ) );
             }
         }
         else
@@ -124,7 +124,7 @@ public class ProxyGeoServer extends HttpServlet
             urlString += ( ( queryString == null ) ? "" : ( "?" + queryString ) );
             urlString = request.getParameter( "url" );
 
-            if ( !whiteList.isEmpty( ) && !whiteList.contains( urlString ) )
+            if ( !_whiteList.isEmpty( ) && !_whiteList.contains( urlString ) )
             {
                 log.warning( "The given URL is not allowed by proxy : " + urlString );
                 response.sendError( HttpServletResponse.SC_FORBIDDEN );
@@ -191,7 +191,7 @@ public class ProxyGeoServer extends HttpServlet
             webToProxyBuf.close(  );
             con.disconnect(  );
         }
-        catch ( Exception e )
+        catch ( IOException e )
         {
             throw new ServletException(  );
         }
