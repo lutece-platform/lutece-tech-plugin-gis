@@ -46,26 +46,26 @@ import java.util.List;
 public final class ViewDAO implements IViewDAO
 {
     private static final String REGEX_ID = "-?[0-9]+";
-    public String GIS_VIEW = "gis.view.";
-    public String GIS_VIEW_LIST = "list";
-    public String GIS_VIEW_CODE = ".code";
-    public String GIS_SERVERNAME = "serverName";
-    public String GIS_FEATURENS = "featureNS";
-    public String GIS_VIEW_AVAILABLEPARAMETERS = "availableParameters";
-    public String GIS_VIEW_AVAILABLEPARAMETERSLAYERS = "availableParametersLayers";
-    public String GIS_VIEW_AVAILABLEPARAMETERSSTYLES = "availableParametersStyles";
-    public String GIS_VIEW_AVAILABLEPARAMETERSSTYLERULES = "availableParametersStyleRules";
-    public String PARAMETER_SUFFIX_BASE_LAYERS = "layers.base";
-    public String PARAMETER_SUFFIX_THEMATIC_LAYERS = "layers.thematic";
-    public String PARAMETER_SUFFIX_SELECTABLE_LAYERS = "layers.selectable";
-    public String PARAMETER_SUFFIX_STYLES = "styles";
-    public String PARAMETER_SUFFIX_DEFAULT_STYLE_RULES = ".style.default.rules";
-    public String PARAMETER_SUFFIX_SELECT_STYLE_RULES = ".style.select.rules";
-    public String PARAMETER_SUFFIX_DEFAULT_STYLE_RULE = ".style.default.";
-    public String PARAMETER_SUFFIX_SELECT_STYLE_RULE = ".style.select.";
-    public String PARAMETER_SUFFIX_TEMPLATEFILE = ".templateFile";
-    public String PARAMETER_SUFFIX_JSFILE = ".jsFile";
-    public String PARAMETER_SUFFIX_PARAMETER = ".parameter.";
+    public static final String GIS_VIEW = "gis.view.";
+    public static final String GIS_VIEW_LIST = "list";
+    public static final String GIS_VIEW_CODE = ".code";
+    public static final String GIS_SERVERNAME = "serverName";
+    public static final String GIS_FEATURENS = "featureNS";
+    public static final String GIS_VIEW_AVAILABLEPARAMETERS = "availableParameters";
+    public static final String GIS_VIEW_AVAILABLEPARAMETERSLAYERS = "availableParametersLayers";
+    public static final String GIS_VIEW_AVAILABLEPARAMETERSSTYLES = "availableParametersStyles";
+    public static final String GIS_VIEW_AVAILABLEPARAMETERSSTYLERULES = "availableParametersStyleRules";
+    public static final String PARAMETER_SUFFIX_BASE_LAYERS = "layers.base";
+    public static final String PARAMETER_SUFFIX_THEMATIC_LAYERS = "layers.thematic";
+    public static final String PARAMETER_SUFFIX_SELECTABLE_LAYERS = "layers.selectable";
+    public static final String PARAMETER_SUFFIX_STYLES = "styles";
+    public static final String PARAMETER_SUFFIX_DEFAULT_STYLE_RULES = ".style.default.rules";
+    public static final String PARAMETER_SUFFIX_SELECT_STYLE_RULES = ".style.select.rules";
+    public static final String PARAMETER_SUFFIX_DEFAULT_STYLE_RULE = ".style.default.";
+    public static final String PARAMETER_SUFFIX_SELECT_STYLE_RULE = ".style.select.";
+    public static final String PARAMETER_SUFFIX_TEMPLATEFILE = ".templateFile";
+    public static final String PARAMETER_SUFFIX_JSFILE = ".jsFile";
+    public static final String PARAMETER_SUFFIX_PARAMETER = ".parameter.";
 
     public String getPluginName(  )
     {
