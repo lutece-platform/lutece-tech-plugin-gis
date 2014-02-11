@@ -1296,16 +1296,16 @@
          }
         else { 
 // OBR - Start
-			scrollTopValue = $(window).scrollTop();
-	    	if(jQuery(".navbar-inner")[0] && jQuery("#footer")[0]){
-	          	var headerHeight = jQuery(".navbar-inner").height()+10;
-	        	var footerHeight = jQuery("#footer").height()+10;
-	        	jQuery("#"+mapId).css({ position:"absolute", left: "10px", top: headerHeight+"px"});
-	            jQuery("#"+mapId).animate({'z-index': '100', left: "10px", top: headerHeight+"px", height: (jQuery(window).height()-footerHeight-headerHeight) +"px", width: (jQuery(window).width()-20) +"px"  }, 600);
+        	scrollTopValue = $(window).scrollTop();
+          	if(jQuery(".navbar-inner")[0] && jQuery("#footer")[0]){
+          		var headerHeight = jQuery(".navbar-inner").height()+10;
+            	var footerHeight = jQuery("#footer").height()+10;
+    	        jQuery("#"+mapId).css({ position:"absolute", left:"10px", right:"10px", top:headerHeight+"px", bottom:footerHeight+"px",  height: "auto", width: "auto" });
+          		jQuery("#"+mapId).animate({'z-index': '100', position:"absolute",left:"10px", right:"10px", top:headerHeight+"px", bottom:footerHeight+"px",  height: "auto", width: "auto" }, 600);
 	    	}
 	    	else{
-	    		jQuery("#"+mapId).css({ position:"absolute", left: "10px", top: "10px"});
-	            jQuery("#"+mapId).animate({'z-index': '100', left: "10px", top: "10px",height: (jQuery(window).height()-20) +"px", width: (jQuery(window).width()-20) +"px"  }, 600);
+	    		jQuery("#"+mapId).css({ position:"absolute",left: "10px", top: "10px",right:"10px", bottom:"10px",height: "auto", width: "auto" });
+	            jQuery("#"+mapId).animate({'z-index': '100', left: "10px", top: "10px",right:"10px",bottom:"10px",height: "auto", width: "auto"  }, 600);
 	    	}
 			$('html,body').animate({scrollTop: 0}, '600', null, function() {
 				// Force refresh in case of missing tiles after maximize.
