@@ -1190,15 +1190,20 @@
 	 * 
 	 */
 	function getOGCFilter(stringFilter){
-		var jsonFilter = jQuery.parseJSON(stringFilter);
-		if (jsonFilter != null) {
-			if (jsonFilter.logical == undefined) {
-				stringFilter = '{"logical":"AND", "criteria1":' + stringFilter + ',"criteria2":""}';
-				jsonFilter = jQuery.parseJSON(stringFilter);
+		try {
+			var jsonFilter = jQuery.parseJSON(stringFilter);
+			if (jsonFilter != null) {
+				if (jsonFilter.logical == undefined) {
+					stringFilter = '{"logical":"AND", "criteria1":' + stringFilter + ',"criteria2":""}';
+					jsonFilter = jQuery.parseJSON(stringFilter);
+				}
+				return json2Filter(jsonFilter);
 			}
-			return json2Filter(jsonFilter);
+			return '';
+		} catch (err) {
+			// New version of parseJSON : throw exception if stringFilter is empty
+			return '';
 		}
-		return '';
 	}
 	
 	
