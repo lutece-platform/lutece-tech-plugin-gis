@@ -9,7 +9,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>plugin-gis</artifactId>
 	<packaging>lutece-plugin</packaging>
-	<version>2.1.1</version>
+	<version>2.1.2-SNAPSHOT</version>
 	<name>plugin-GIS - Lutece Geographic information system plugin</name>
 	
 	<repositories>
@@ -37,9 +37,9 @@
 	</properties>
 
 	<scm>
-		<connection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/tags/plugin-gis-2.1.1</connection>
-		<developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/tags/plugin-gis-2.1.1</developerConnection>
-		<url>https://dev.lutece.paris.fr/viewvc/lutece/portal/tags/plugin-gis-2.1.1</url>
+		<connection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/technical/plugin-gis</connection>
+		<developerConnection>scm:svn:https://dev.lutece.paris.fr/svn/lutece/portal/trunk/plugins/technical/plugin-gis</developerConnection>
+		<url>https://dev.lutece.paris.fr/viewvc/lutece/portal/trunk/plugins/technical/plugin-gis</url>
 	</scm>
 	
 </project>
