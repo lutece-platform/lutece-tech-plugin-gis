@@ -21,6 +21,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     displayedFeature: null,
     
     minZoomLevel: null,
+    
+    controls: null,
 
     /**
      * Constructor
@@ -56,6 +58,55 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     			function ( event ) {
     		 		this.map.zoomToMaxExtent();
     				this.cleanFeatures();
+    			},
+    			this)
+    		);
+    },
+    
+    /**
+     * Method: listenActivatePopup
+     * 
+     * Properties:
+	 * event <Event>
+     */
+    listenActivatePopup : function( event ) {
+    	$("body").bind("GisLocalization.activatePopup", $.proxy( 
+    			function ( event ) {
+    				this.activatePopup();
+    			},
+    			this)
+    		);
+    },
+    
+    /**
+     * Method: listenCreatePopup
+     * 
+     * Properties:
+	 * event <Event>
+     */
+    listenCreatePopup : function( event ) {
+    	$("body").bind("GisLocalization.createPopup", $.proxy( 
+    			function ( event ) {
+    				this.createPopup(event.feature);
+    			},
+    			this)
+    		);
+    },
+    
+    /**
+     * Method: listenAddFeatureEvent
+     * 
+     * Properties:
+	 * event <Event>
+     */
+    listenAddFeatureEvent : function( event )
+    {
+    	$("body").bind("GisLocalization.addFeature", $.proxy( 
+    			function ( event ) {
+    		    	var lonLat = this.getLonLatFromPoi(event.poi);
+    		    	// add the feature on the layer
+    		    	this.addFeatureWithPopup(lonLat, event.label);
+    		    	this.activatePopup();
     			},
     			this)
     		);
@@ -130,17 +181,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     drawFeatureOnWithPoi: function( poi ) {
     	//get the LonLat object from poi
     	var lonLat = this.getLonLatFromPoi(poi);
-    	var address = poi.libelleTypo;
     	this.cleanFeatures();
     	// add the feature on the layer
     	this.addFeature(lonLat);
-    	
-    	// event send event if no data has been received
-    	this.triggerLocalizationEvent("GisLocalization.done", {
-    			'address': address,  		
-    			'lonLat': { lon:lonLat.lon, lat:lonLat.lat },
-    		    'inverse': false
-    	});
     },
     
     /**
@@ -209,5 +252,80 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
         OpenLayers.Event.stop(evt,true);
     },
     
+    /** 
+     * Handle Popup
+     */
+    
+    /**
+     * Method: addFeatureWithPopup
+     * 
+     * Properties:
+     * lonLat - <Openlayers.LonLat>
+     * label - The popupContent
+     */
+    addFeatureWithPopup: function( lonLat, label ){
+    	var point = new OpenLayers.Geometry.Point( lonLat.lon, lonLat.lat );
+    	//To add new Vector Layer
+    	this.displayedFeature = new OpenLayers.Feature.Vector( point, {'description': label} );
+    	// this.displayedFeature = new OpenLayers.Feature.Vector( point, lonLat );
+    	this.positionVectorLayer.addFeatures(this.displayedFeature);
+    },
+    
+    /**
+     * Method: activatePopup
+     * this method activate popup in the map.
+     */
+    activatePopup: function() {
+    	//Add a selector control to the vectorLayer with popup functions
+        controls = {
+          selector: new OpenLayers.Control.SelectFeature(this.positionVectorLayer, { onSelect: createPopup, onUnselect: destroyPopup })
+        };
+        
+        // Add the popup to the map
+        this.map.addControl(controls['selector']);
+        controls['selector'].activate();
+    },
+    
+    createPopup: function(feature) {
+    	  feature.popup = new OpenLayers.Popup.FramedCloud("pop",
+    	      feature.geometry.getBounds().getCenterLonLat(),
+    	      null,
+    	      '<div class="markerContent">'+feature.attributes.description+'</div>',
+    	      null,
+    	      true,
+    	      function() { controls['selector'].unselectAll(); }
+    	  );
+    	  //feature.popup.closeOnMove = true;
+    	  this.map.addPopup(feature.popup);
+    },
+    
     CLASS_NAME: "OpenLayers.Control.StaticGeolocalizationControl"
 });
+
+
+/**
+ * Method: createPopup
+ * this method open the popup of the feature.
+ * 
+ * Properties : 
+ * feature - the feature of the popup to open
+ */
+function createPopup(feature) {
+	$("body").trigger(
+		jQuery.Event("GisLocalization.createPopup", {
+			feature: feature
+			})
+	);
+}
+
+/**
+ * Method: destroyPopup
+ * this method close the popup of the feature.
+ * 
+ * Properties : 
+ * feature - the feature of the popup to close
+ */
+function destroyPopup(feature) {
+  feature.popup.destroy();
+  feature.popup = null;
+}

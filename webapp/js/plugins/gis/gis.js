@@ -751,6 +751,9 @@
 			var staticGeolocalizationControl = new OpenLayers.Control.StaticGeolocalizationControl( options, map );
 			staticGeolocalizationControl.listenLocalizationSendEvent();
 			staticGeolocalizationControl.listenLocalisationCleanFeatureEvent();
+			staticGeolocalizationControl.listenAddFeatureEvent();
+			staticGeolocalizationControl.listenActivatePopup();
+			staticGeolocalizationControl.listenCreatePopup();
 		}
 		
 		if(eval(parameters['overviewMap'])) {
