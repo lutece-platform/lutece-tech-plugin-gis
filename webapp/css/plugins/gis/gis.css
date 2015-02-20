@@ -197,3 +197,23 @@ div.olControlDrawFeaturePolygonItemInactive, div.olControlDrawFeaturePolygonItem
     cursor: pointer;
 }
 */
+
+/*
+Disable GPU because of jira GIS-64
+see https://github.com/openlayers/openlayers/blob/master/notes/2.13.md#map-animated-zooming-and-gpu-support
+*/
+img.olTileImage {
+    -webkit-transform: inherit !important ;
+    -moz-transform: inherit !important ;
+    -o-transform: inherit !important ;
+    -ms-transform: inherit !important ;
+    transform: inherit !important ;
+    -webkit-backface-visibility: inherit !important ;
+    -moz-backface-visibility: inherit !important ;
+    -ms-backface-visibility: inherit !important ;
+    backface-visibility: inherit !important ;
+    -webkit-perspective: inherit !important ;
+    -moz-perspective: inherit !important ;
+    -ms-perspective: inherit !important ;
+    perspective: inherit !important ;
+}
