@@ -9,7 +9,6 @@
 		strSep = "/";
 	$LAB
 		.script("${base_url}"+strSep+"${view.jsFile}").wait()
-		.script("${base_url}"+strSep+"js/jquery/plugins/ui/jquery.ui.custom-gis.min.js").wait()
 		.script("${base_url}"+strSep+"js/plugins/gis/gis.js").wait()
 		.wait(function(){ 
 			if($.trim($("#${map_name}").html()=="")){ 
@@ -52,4 +51,3 @@
 			}
 		}); 
 </script> 
- 
