@@ -217,3 +217,8 @@ img.olTileImage {
     -ms-perspective: inherit !important ;
     perspective: inherit !important ;
 }
+
+/* Fix map display with AdminLTE.css (bootstrap theme): jira GIS-63 */
+.olMap img {
+  max-width: none !important;
+}
