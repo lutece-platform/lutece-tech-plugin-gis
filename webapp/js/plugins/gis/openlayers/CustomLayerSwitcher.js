@@ -343,7 +343,7 @@ OpenLayers.Control.CustomLayerSwitcher =
         this.baseLbl.style.display = (containsBaseLayers) ? "" : "none"; 
         
         // redraw sliders
-        jQuery("body").trigger(jQuery.Event("Map.redraw"));
+        document.body.dispatchEvent( new CustomEvent( "Map.redraw" ) );
 
         return this.div;
     },

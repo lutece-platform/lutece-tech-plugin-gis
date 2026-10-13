@@ -5,27 +5,62 @@
 <link rel="stylesheet" type="text/css" href="js/plugins/gis/openlayers/LayerSearchPanel.css" />
 <link rel="stylesheet" type="text/css" href="js/plugins/gis/openlayers/GeolocalizationPanel.css" />
 
-<script type="text/javascript">
+<script>
 
 function showMap(gisCode, mapName) {
-	$(document).ready(function() {
-		
-	var baseUrl = $('base').attr('href');
-		$LAB
-			.script(baseUrl +"js/plugins/gis/openlayers/OpenLayers.js").wait()
-			.script(baseUrl +"js/plugins/gis/openlayers/CustomLayerSwitcher.js").wait()
-			.script(baseUrl +"js/plugins/gis/openlayers/Legend.js").wait()
-			.script(baseUrl +"js/plugins/gis/openlayers/LayerSearchPanel.js").wait()
-			.script(baseUrl +"js/plugins/gis/openlayers/GeolocalizationPanel.js").wait()
-			.script(baseUrl +"js/plugins/gis/gis.js").wait()
-			.wait(function(){
-				$.get(baseUrl +'/jsp/site/plugins/gis/DoDisplayMap.jsp?map_name='+mapName+'&gis_code='+gisCode, function(data) {
-					$('#'+mapName).html(data);
-					$('#'+mapName).show();
-				});
-			});
-	});
+	function loadScripts( urls ) {
+		return urls.reduce( function( previous, url ) {
+			return previous.then( function( ) {
+				return new Promise( function( resolve, reject ) {
+					var script = document.createElement( 'script' );
+					script.src = url;
+					script.onload = resolve;
+					script.onerror = reject;
+					document.head.appendChild( script );
+				} );
+			} );
+		}, Promise.resolve( ) );
+	}
+
+	function insertHtml( element, html ) {
+		element.innerHTML = html;
+		element.querySelectorAll( 'script' ).forEach( function( oldScript ) {
+			var script = document.createElement( 'script' );
+			Array.prototype.forEach.call( oldScript.attributes, function( attribute ) {
+				script.setAttribute( attribute.name, attribute.value );
+			} );
+			script.text = oldScript.text;
+			oldScript.replaceWith( script );
+		} );
+	}
+
+	function display( ) {
+		var base = document.querySelector( 'base' );
+		var baseUrl = base ? base.getAttribute( 'href' ) : '';
+		loadScripts( [
+			baseUrl + 'js/plugins/gis/openlayers/OpenLayers.js',
+			baseUrl + 'js/plugins/gis/openlayers/CustomLayerSwitcher.js',
+			baseUrl + 'js/plugins/gis/openlayers/Legend.js',
+			baseUrl + 'js/plugins/gis/openlayers/LayerSearchPanel.js',
+			baseUrl + 'js/plugins/gis/openlayers/GeolocalizationPanel.js',
+			baseUrl + 'js/plugins/gis/gis.js'
+		] ).then( function( ) {
+			return fetch( baseUrl + 'jsp/site/plugins/gis/DoDisplayMap.jsp?' + new URLSearchParams( { map_name: mapName, gis_code: gisCode } ) );
+		} ).then( function( response ) {
+			return response.text( );
+		} ).then( function( html ) {
+			var mapElement = document.getElementById( mapName );
+			insertHtml( mapElement, html );
+			mapElement.style.display = '';
+		} );
+	}
+
+	if ( document.readyState === 'loading' ) {
+		document.addEventListener( 'DOMContentLoaded', display );
+	} else {
+		display( );
+	}
 }
- 
+
 </script>
 </#macro>

@@ -1,53 +1,62 @@
-<link rel="stylesheet" type="text/css" href="js/jquery/plugins/ui/css/jquery-ui.css"/>
-<script src="js/plugins/gis/LABjs-1.0.2rc1/LAB.js" type="text/javascript"></script>
-<script defer="defer" type="text/javascript"> 
+<script>
 /*
- * optionalParameters : le tableau "optionalParameters peut �tre d�clar� dans le js devant contenir la carte
- */	
-	var strSep = "";
-	if(!('${base_url}'.match("/$")) && !('${view.jsFile}'.match("^/")))
-		strSep = "/";
-	$LAB
-		.script("${base_url}"+strSep+"${view.jsFile}").wait()
-		.script("${base_url}"+strSep+"js/plugins/gis/gis.js").wait()
-		.wait(function(){ 
-			if($.trim($("#${map_name}").html()=="")){ 
-				var parameters = new Array();
-				<#list view.parameters?keys as prop>
-						parameters['${prop}'] = "${view.getParameter(prop)}";
-				</#list>  
-				var optionalParameters = $("#${map_name}").data('optionalParameters');
-	
-				if (typeof optionalParameters != "undefined") {
-					//on peuple le tableau parameters avec les valeurs du tableau optionalParameters
-					
-					$.each(optionalParameters, function(key, value) {
-						parameters[key]=value;	 
-					}); 
-				}
-				
-				parameters['i18n'] = {
-					'gis.map.layerSearchPanel.drop':'#i18n{gis.map.layerSearchPanel.drop}',
-					'gis.map.layerSearchPanel.empty':'#i18n{gis.map.layerSearchPanel.empty}',
-					'gis.map.layerSearchPanel.button':'#i18n{gis.map.layerSearchPanel.button}',
-					'gis.map.layerSearchPanel.title':'#i18n{gis.map.layerSearchPanel.title}',
-					'gis.map.geolocalizationPanel.button':'#i18n{gis.map.geolocalizationPanel.button}',
-					'gis.map.geolocalizationPanel.title':'#i18n{gis.map.geolocalizationPanel.title}'
-				};
-				
-				strSep = "";
-				if(!('${base_url}'.match("/$")))
-					strSep = "/";
-				var globalParameters = {};
-				globalParameters['appProdUrl'] = "${base_url}" + strSep;
-				globalParameters['serverName'] = "${view.serverName}";
-				globalParameters['featureNS'] = "${view.featureNS}";
-				globalParameters['templateFile'] = "${view.templateFile}";
-				globalParameters['availableParameters'] = "${view.availableParameters}";
-				globalParameters['availableParametersLayers'] = "${view.availableParametersLayers}";
-				globalParameters['availableParametersStyles'] = "${view.availableParametersStyles}";
-				globalParameters['availableParametersStyleRules'] = "${view.availableParametersStyleRules}";
-				init_carto("#${map_name}", globalParameters, parameters);
-			}
-		}); 
-</script> 
+ * optionalParameters : the map element may carry an "optionalParameters" object overriding the view parameters
+ */
+(function() {
+	var baseUrl = '${base_url?js_string}';
+	var jsFile = '${view.jsFile?js_string}';
+	var mapName = '${map_name!?js_string}';
+	var strSep = ( !baseUrl.match( /\/$/ ) && !jsFile.match( /^\// ) ) ? '/' : '';
+
+	function loadScripts( urls ) {
+		return urls.reduce( function( previous, url ) {
+			return previous.then( function( ) {
+				return new Promise( function( resolve, reject ) {
+					var script = document.createElement( 'script' );
+					script.src = url;
+					script.onload = resolve;
+					script.onerror = reject;
+					document.head.appendChild( script );
+				} );
+			} );
+		}, Promise.resolve( ) );
+	}
+
+	loadScripts( [ baseUrl + strSep + jsFile, baseUrl + strSep + 'js/plugins/gis/gis.js' ] ).then( function( ) {
+		var mapElement = document.getElementById( mapName );
+		if ( !mapElement ) {
+			return;
+		}
+		var parameters = {};
+<#list view.parameters?keys as prop>
+		parameters['${prop?js_string}'] = '${view.getParameter(prop)!?js_string}';
+</#list>
+		var optionalParameters = mapElement.optionalParameters;
+		if ( typeof optionalParameters != 'undefined' ) {
+			Object.keys( optionalParameters ).forEach( function( key ) {
+				parameters[key] = optionalParameters[key];
+			} );
+		}
+
+		parameters['i18n'] = {
+			'gis.map.layerSearchPanel.drop': '#i18n{gis.map.layerSearchPanel.drop}',
+			'gis.map.layerSearchPanel.empty': '#i18n{gis.map.layerSearchPanel.empty}',
+			'gis.map.layerSearchPanel.button': '#i18n{gis.map.layerSearchPanel.button}',
+			'gis.map.layerSearchPanel.title': '#i18n{gis.map.layerSearchPanel.title}',
+			'gis.map.geolocalizationPanel.button': '#i18n{gis.map.geolocalizationPanel.button}',
+			'gis.map.geolocalizationPanel.title': '#i18n{gis.map.geolocalizationPanel.title}'
+		};
+
+		var globalParameters = {};
+		globalParameters['appProdUrl'] = baseUrl + ( baseUrl.match( /\/$/ ) ? '' : '/' );
+		globalParameters['serverName'] = '${view.serverName?js_string}';
+		globalParameters['featureNS'] = '${view.featureNS?js_string}';
+		globalParameters['templateFile'] = '${view.templateFile?js_string}';
+		globalParameters['availableParameters'] = '${view.availableParameters?js_string}';
+		globalParameters['availableParametersLayers'] = '${view.availableParametersLayers?js_string}';
+		globalParameters['availableParametersStyles'] = '${view.availableParametersStyles?js_string}';
+		globalParameters['availableParametersStyleRules'] = '${view.availableParametersStyleRules?js_string}';
+		init_carto( '#' + mapName, globalParameters, parameters );
+	} );
+})();
+</script>

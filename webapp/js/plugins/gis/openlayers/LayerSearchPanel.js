@@ -62,7 +62,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */     
     addSubmitEvent: function(evt){
     	 OpenLayers.Event.stopObserving(this.div,"mouseover",this.mouseOverObserver);
-	 	 $('.olControlLayerSearchPanelForm').submit($.proxy(this.getFeatures,this));
+	 	 document.querySelectorAll( '.olControlLayerSearchPanelForm' ).forEach( function( form ) {
+	 		 form.addEventListener( 'submit', function( e ) { e.preventDefault( ); this.getFeatures( ); }.bind( this ) );
+	 	 }, this );
     },
     
     clickDeleteButton: function(evt){
@@ -86,7 +88,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	}	
     	
     	this.searchResultSpan.innerHTML='';
-    	jQuery("body").trigger(jQuery.Event("Map.redraw"));
+    	document.body.dispatchEvent( new CustomEvent( "Map.redraw" ) );
     },
 
  
@@ -191,7 +193,8 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 			);
 			
 	         // [OGCFilter]
-			var field = $(".olControlLayerSearchPanelField").val().replace(/%/gi,'*');//manage % as wildcard character
+			var fieldValue = document.querySelector( ".olControlLayerSearchPanelField" ).value;
+			var field = fieldValue.replace(/%/gi,'*');//manage % as wildcard character
 			htLayerParameters['filter'] = new OpenLayers.Filter.Comparison({
 				type: OpenLayers.Filter.Comparison.LIKE,
 				property: this.searchWFSParameters['ogcFilterProperty'],
@@ -214,11 +217,11 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 					var zoom = this.displayedLayer.getZoomForExtent(bounds,false) * 1.10;
 					this.map.setCenter(bounds.getCenterLonLat(),zoom,false);
 			    
-					this.deleteImg.setAttribute('title',this.messages['gis.map.layerSearchPanel.drop'].replace('{0}',$(".olControlLayerSearchPanelField").val()));
+					this.deleteImg.setAttribute('title',this.messages['gis.map.layerSearchPanel.drop'].replace('{0}',fieldValue));
 			    	this.deleteImg.style.visibility = 'visible';
 					
 				}else{
-					p.innerHTML = this.messages['gis.map.layerSearchPanel.empty'].replace('{0}',$(".olControlLayerSearchPanelField").val());
+					p.textContent = this.messages['gis.map.layerSearchPanel.empty'].replace('{0}',fieldValue);
 					this.searchResultSpan.appendChild(p);
 			    	if(this.deleteImg.style.visibility == "visible"){
 			    		this.deleteImg.style.visibility = "hidden";
@@ -234,7 +237,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 			this.map.addLayer( this.displayedLayer );
 			
 			// 6 - Send redraw event for the sliders
-			jQuery("body").trigger(jQuery.Event("Map.redraw"));
+			document.body.dispatchEvent( new CustomEvent( "Map.redraw" ) );
     	}
     	return false;
     },

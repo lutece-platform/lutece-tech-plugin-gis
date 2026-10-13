@@ -33,68 +33,38 @@
  */
 package fr.paris.lutece.plugins.gis.web;
 
-import fr.paris.lutece.plugins.gis.service.GisService;
-import fr.paris.lutece.portal.service.message.SiteMessageException;
-import fr.paris.lutece.portal.service.security.UserNotSignedException;
-import fr.paris.lutece.portal.service.template.AppTemplateService;
-import fr.paris.lutece.portal.web.admin.PluginAdminPageJspBean;
-import fr.paris.lutece.util.html.HtmlTemplate;
+import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
+import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 
-import java.util.HashMap;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Named;
 
-import javax.servlet.http.HttpServletRequest;
-
-
-public class GisJspBean extends PluginAdminPageJspBean
+/**
+ * Back office page displaying the GIS map.
+ */
+@RequestScoped
+@Named
+@Controller( controllerJsp = "ManageGis.jsp", controllerPath = "jsp/admin/plugins/gis/", right = GisJspBean.RIGHT_MANAGE_GIS, securityTokenEnabled = true )
+public class GisJspBean extends MVCAdminJspBean
 {
-    ////////////////////////////////////////////////////////////////////////////
-    // Constants
-
-    // Right
     public static final String RIGHT_MANAGE_GIS = "GIS_MANAGEMENT";
     public static final String RIGHT_DISPLAY_MAP = "GIS_MANAGEMENT";
 
-    // Parameters
-    private static final String PARAMETER_GIS_CODE = "gis_code";
+    private static final long serialVersionUID = 1L;
 
-    // I18n
     private static final String PROPERTY_PAGE_TITLE_FEATURES = "gis.manage_features.pageTitle";
-
-    // Templates
     private static final String TEMPLATE_HOME = "/admin/plugins/gis/manage_gis.html";
+    private static final String VIEW_MANAGE_GIS = "manageGis";
 
     /**
-     * Returns the Gis HTML code for a given view
+     * Returns the GIS management page.
      *
-     * @param request The HTTP request.
-     * @param nMode The current mode. [not implemented]
-     * @throws UserNotSignedException
-     * @throws SiteMessageException occurs when a site message need to be
-     *             displayed
+     * @return the page
      */
-    public String getMap( HttpServletRequest request )
+    @View( value = VIEW_MANAGE_GIS, defaultView = true )
+    public String getManageGis( )
     {
-        String strViewCode = request.getParameter( PARAMETER_GIS_CODE );
-
-        return GisService.getInstance(  ).getView( strViewCode, null, request );
-    }
-
-    /**
-     * Returns the Gis HTML management page
-     *
-     * @param request The HTTP request.
-     * @param nMode The current mode. [not implemented]
-     * @throws UserNotSignedException
-     * @throws SiteMessageException occurs when a site message need to be
-     *             displayed
-     */
-    public String getManageGis( HttpServletRequest request )
-    {
-        setPageTitleProperty( PROPERTY_PAGE_TITLE_FEATURES );
-
-        HashMap rootModel = new HashMap(  );
-        HtmlTemplate templateList = AppTemplateService.getTemplate( TEMPLATE_HOME, getLocale(  ), rootModel );
-
-        return getAdminPage( templateList.getHtml(  ) );
+        return getPage( PROPERTY_PAGE_TITLE_FEATURES, TEMPLATE_HOME );
     }
 }

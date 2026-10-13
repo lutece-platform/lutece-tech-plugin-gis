@@ -33,8 +33,10 @@
  */
 package fr.paris.lutece.plugins.gis.business;
 
-import fr.paris.lutece.plugins.gis.service.GisPlugin;
+import fr.paris.lutece.plugins.gis.service.GisService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
+
+import jakarta.enterprise.context.ApplicationScoped;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,7 @@ import java.util.List;
 /**
  * This class provides Data Access methods for View objects
  */
+@ApplicationScoped
 public final class ViewDAO implements IViewDAO
 {
     private static final String REGEX_ID = "-?[0-9]+";
@@ -69,7 +72,7 @@ public final class ViewDAO implements IViewDAO
 
     public String getPluginName(  )
     {
-        return GisPlugin.PLUGIN_NAME;
+        return GisService.PLUGIN_NAME;
     }
 
     public View findById( Integer key )
@@ -78,8 +81,8 @@ public final class ViewDAO implements IViewDAO
         view.setId( key );
         view.setTemplateFile( AppPropertiesService.getProperty( GIS_VIEW + String.valueOf( key ) +
                 PARAMETER_SUFFIX_TEMPLATEFILE ) );
-        view.setServerName( AppPropertiesService.getProperty( GIS_VIEW + GIS_SERVERNAME ) );
-        view.setFeatureNS( AppPropertiesService.getProperty( GIS_VIEW + GIS_FEATURENS ) );
+        view.setServerName( AppPropertiesService.getProperty( GIS_VIEW + GIS_SERVERNAME, "" ) );
+        view.setFeatureNS( AppPropertiesService.getProperty( GIS_VIEW + GIS_FEATURENS, "" ) );
 
         view.setAvailableParameters( AppPropertiesService.getProperty( GIS_VIEW + GIS_VIEW_AVAILABLEPARAMETERS ) );
         view.setAvailableParametersLayers( AppPropertiesService.getProperty( GIS_VIEW +
@@ -92,7 +95,7 @@ public final class ViewDAO implements IViewDAO
         view.setJsFile( AppPropertiesService.getProperty( GIS_VIEW + String.valueOf( key ) + PARAMETER_SUFFIX_JSFILE ) );
 
         //get Parameters
-        String[] availableParameters = AppPropertiesService.getProperty( GIS_VIEW + GIS_VIEW_AVAILABLEPARAMETERS )
+        String[] availableParameters = AppPropertiesService.getProperty( GIS_VIEW + GIS_VIEW_AVAILABLEPARAMETERS, "" )
                                                            .split( "," );
 
         for ( String strKey : availableParameters )
@@ -194,7 +197,7 @@ public final class ViewDAO implements IViewDAO
     {
         List<View> viewsList = new ArrayList<View>(  );
 
-        String[] listIdViews = AppPropertiesService.getProperty( GIS_VIEW + GIS_VIEW_LIST ).split( "," );
+        String[] listIdViews = AppPropertiesService.getProperty( GIS_VIEW + GIS_VIEW_LIST, "" ).split( "," );
 
         for ( String strId : listIdViews )
         {

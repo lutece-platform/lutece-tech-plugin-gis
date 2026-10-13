@@ -3,7 +3,7 @@ package fr.paris.lutece.plugins.gis.service;
 
 import java.rmi.RemoteException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.gis.business.LonLat;
 

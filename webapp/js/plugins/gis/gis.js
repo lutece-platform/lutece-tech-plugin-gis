@@ -1,4 +1,4 @@
-(function($) {	 
+(function() {	 
     var map;
     var mapId;
 	var server;
@@ -7,9 +7,6 @@
 	var selectedFeatureIds = new Array();
     // Variable Fonction
     var maximizedMap = false;
-	var mapWidth = "";
-	var mapHeight = "";
-	var mapPosition = "";
 	var scrollTopValue = "";
 	
 	Array.prototype.remove=function(s){ 
@@ -17,6 +14,49 @@
 			this.splice(this.indexOf(s), 1);
 		}
 	}  
+
+	/*
+	 * Calls fn( key, value ) on each entry of an array or an object, stops when fn returns false
+	 */
+	function each(collection, fn) {
+		if (Array.isArray(collection)) {
+			for (var i = 0; i < collection.length; i++) {
+				if (fn.call(collection[i], i, collection[i]) === false) {
+					break;
+				}
+			}
+		} else {
+			for (var key in collection) {
+				if (Object.prototype.hasOwnProperty.call(collection, key) && fn.call(collection[key], key, collection[key]) === false) {
+					break;
+				}
+			}
+		}
+	}
+
+	/*
+	 * Reads a boolean parameter written "true" or "false"
+	 */
+	function isTrue(value) {
+		return trim(value) === 'true';
+	}
+
+	/*
+	 * Trims a value, an empty string for null or undefined
+	 */
+	function trim(value) {
+		return (value == null) ? '' : String(value).trim();
+	}
+
+	/*
+	 * Returns the element of a selector, an id or an element
+	 */
+	function getElement(target) {
+		if (typeof target !== 'string') {
+			return target;
+		}
+		return document.getElementById(target) || document.querySelector(target);
+	}
 
 	/*
 	 * Public methods
@@ -28,75 +68,75 @@
 	 * featureNS : The geoserver Namespace ... ) parameters : map of parameters
 	 * (defined in properties)
 	 */
-    $.fn.initMap = function(globalParameters, parameters) {
-		return this.each(function() {
-			initMap(this.id, globalParameters, parameters);
-		});
-	}
-	
-	/**
-	 * Destroy the new map
-	 */
-     $.fn.destroy = function() {
-		triggerEvent("mapDestroyed");
-		$("#"+mapId).removeClass('olMap');
-        map.destroy();
-    }
-    
-    /**
-	 * return an Array containing the selected features ids attributeName : The
-	 * name of the attribute to retrieve
-	 */
-    $.fn.getSelectedFeaturesIds = function(attributeName) {
-		return selectedFeatureIds[attributeName]; 
-	}
-    
-    /**
-	 * Get the coordinate of the feature in WKT format
-	 * 
-	 */
-    $.fn.getWKT = function(feature) {
-		return new OpenLayers.Format.WKT().write(feature);
-	}
-    
-    /**
-	 * Add a new point on the point Layer layer whit the specified coordinates
-	 * pointObject : the point object coordX : the X coordinate coordY : the Y
-	 * coordinate
-	 */
-    $.fn.addPoint = function(pointObject, coordX, coordY) {
-		return this.each(function() {
+    window.GisMap = {
+
+		/**
+		 * Initialize the new map. target : the map element, its id or a selector ; globalParameters : the global
+		 * parameters ( appProdUrl : The App production URL, serverName : url of the server, featureNS : The geoserver
+		 * Namespace ... ) ; parameters : map of parameters (defined in properties)
+		 */
+		initMap: function(target, globalParameters, parameters) {
+			var element = getElement(target);
+			if (element) {
+				initMap(element.id, globalParameters, parameters);
+			}
+		},
+
+		/**
+		 * Destroy the map
+		 */
+		destroy: function() {
+			triggerEvent("mapDestroyed");
+			document.getElementById(mapId).classList.remove('olMap');
+			map.destroy();
+		},
+
+		/**
+		 * return an Array containing the selected features ids attributeName : The
+		 * name of the attribute to retrieve
+		 */
+		getSelectedFeaturesIds: function(attributeName) {
+			return selectedFeatureIds[attributeName];
+		},
+
+		/**
+		 * Get the coordinate of the feature in WKT format
+		 */
+		getWKT: function(feature) {
+			return new OpenLayers.Format.WKT().write(feature);
+		},
+
+		/**
+		 * Add a new point on the point Layer layer whit the specified coordinates
+		 * pointObject : the point object coordX : the X coordinate coordY : the Y
+		 * coordinate
+		 */
+		addPoint: function(pointObject, coordX, coordY) {
 			addPoint(pointObject, coordX, coordY);
-		});
-	}
-    
-    
-    /**
-	 * Add a new Features on the point Layer layer
-	 */
-    $.fn.addFeaturesGeoJson = function(featurecollection) {
-		return this.each(function() {
+		},
+
+		/**
+		 * Add a new Features on the point Layer layer
+		 */
+		addFeaturesGeoJson: function(featurecollection) {
 			addFeaturesGeoJson(featurecollection);
-		});
-	}
-    
-    /**
-	 * Add a new Features on the point Layer layer
-	 */
-    $.fn.addFeaturesWKT = function(wkt) {
-		return this.each(function() {
+		},
+
+		/**
+		 * Add a new Features on the point Layer layer
+		 */
+		addFeaturesWKT: function(wkt) {
 			addFeaturesWKT(wkt);
-		});
-	}
-    
-    /**
-	 * 
-	 */
-    $.fn.toggleControl = function(value) { 
-		return this.each(function() {
+		},
+
+		/**
+		 * Toggle a control
+		 */
+		toggleControl: function(value) {
 			toggleControl(value);
-		});
-	}
+		}
+	};
+
 	/*
 	 * Private methods
 	 */	
@@ -107,13 +147,7 @@
 	 */
     function initMap(idMap, globalParameters, parameters){
 // OBR - Start
-    	// String.contains() not supported by IE & Chrome since openlayers
-		// 2.13.1 migration
-		// if ($("#"+idMap).attr('class').contains("olMap")){
-		// return false;
-		// }
-
-    	if ($("#"+idMap).attr('class').indexOf("olMap")>=0){ 
+    	if ((document.getElementById(idMap).className || '').indexOf("olMap")>=0){ 
 			return false;
 		}
 // OBR - End
@@ -169,9 +203,9 @@
 	    	}
 	    }
         
-        if(eval(parameters['resolution.enabled'])) {
+        if(isTrue(parameters['resolution.enabled'])) {
             var res = parameters['resolution.grid'].split(",");
-            $.each(res, function(index, value) {
+            each(res, function(index, value) {
             	res[index] = parseFloat(value);
             });
             options['resolutions'] = res;
@@ -191,7 +225,7 @@
 		var identifiableLayer = {};
 		var opacityLayers = new Array();
 		
-		$.each(layersNames, function(index, value) {
+		each(layersNames, function(index, value) {
 			// Convert the filter to the openLayer.filter format
 				if (parameters[layersNames[index] +'.ogcFilter'] != undefined) {
 					/*
@@ -243,8 +277,8 @@
 					htParameters['layers'] = parameters[layersNames[index] + '.layer'];
 					htParameters['format'] = format;
 					htParameters['tiled'] = parameters[layersNames[index] + '.tiled'];
-					htParameters['transparent'] = (jQuery.inArray(value, baseLayersNames) != -1) ? 'false' : 'true';
-					htParameters['isBaseLayer'] = (jQuery.inArray(value, baseLayersNames) == -1) ? false : true;
+					htParameters['transparent'] = (baseLayersNames.indexOf(value) != -1) ? 'false' : 'true';
+					htParameters['isBaseLayer'] = (baseLayersNames.indexOf(value) == -1) ? false : true;
 										
 					if (parameters[layersNames[index] + '.cqlFilter'] != '') {
 						htParameters['cql_Filter'] = parameters[layersNames[index] + '.cqlFilter'];
@@ -261,10 +295,10 @@
 					htOptions['displayOutsideMaxExtent'] = true;
 					
 					// Display In LayerSwitcher
-					htOptions['displayInLayerSwitcher'] = eval(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
+					htOptions['displayInLayerSwitcher'] = isTrue(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
 					
 					// Display in Legend
-					htOptions['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
+					htOptions['displayInLegend'] = isTrue(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
 					
 					if ( htOptions['displayInLegend']) { hasDisplayInLegend = true; }
 					
@@ -306,7 +340,7 @@
 					
 					// SearchFeature
 					if( !htParameters['isBaseLayer']){
-						htOptions['isSearchableLayer'] = eval(parameters[layersNames[index] + '.isSearchable']) ? true : false;
+						htOptions['isSearchableLayer'] = isTrue(parameters[layersNames[index] + '.isSearchable']) ? true : false;
 						// Initialize search feature options
 						if( htOptions['isSearchableLayer'] ){
 							htOptions['searchWFSParameters'] = { 
@@ -325,14 +359,14 @@
 					if ( !htParameters['isBaseLayer'] )
 					{
 						// GetFeatureInfo
-						if ( eval(parameters[layersNames[index] + '.isIdentifiable']) )
+						if ( isTrue(parameters[layersNames[index] + '.isIdentifiable']) )
 						{
 							identifiableLayer["url"] = server;
 							identifiableLayer["layers"] = layers[index];
 						}
 					}
 					
-					if (jQuery.inArray(value, selectableLayersNames) != -1) {
+					if (selectableLayersNames.indexOf(value) != -1) {
 						opacityLayers.push(layers[index]);
 					}
 				}
@@ -389,7 +423,7 @@
 							ruleArray.push(new OpenLayers.Rule({
 				                   elseFilter: true
 				            }));
-							$.each(defaultStyleRules, function(indexRule, valueRule) {
+							each(defaultStyleRules, function(indexRule, valueRule) {
 								var filter = getOGCFilter(parameters[layersNames[index] + '.style.default.' + valueRule + ".filter"]);
 								var name = parameters[layersNames[index] + '.style.default.' + valueRule + ".name"];
 								var symbolizer = getSymbolizer(globalParameters, parameters, parameters[layersNames[index] + '.style.default.' + valueRule + ".style"]);
@@ -416,7 +450,7 @@
 							ruleArray.push(new OpenLayers.Rule({
 				                   elseFilter: true
 				            }));
-							$.each(selectedStyleRules, function(indexRule, valueRule) {
+							each(selectedStyleRules, function(indexRule, valueRule) {
 								var filter = getOGCFilter(parameters[layersNames[index] + '.style.select.' + valueRule + ".filter"]);
 								var name = parameters[layersNames[index] + '.style.select.' + valueRule + ".name"];
 								var symbolizer = getSymbolizer(globalParameters, parameters, parameters[layersNames[index] + '.style.select.' + valueRule + ".style"]);
@@ -444,13 +478,13 @@
 						htParameters['filter'] = parameters[layersNames[index] + '.filter'];
 					
 					// Visibility
-					htParameters['visibility'] = eval(parameters[layersNames[index] + '.visibility']) ? true : false;
+					htParameters['visibility'] = isTrue(parameters[layersNames[index] + '.visibility']) ? true : false;
 					
 					// Display In LayerSwitcher
-					htParameters['displayInLayerSwitcher'] = eval(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
+					htParameters['displayInLayerSwitcher'] = isTrue(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
 
 					// Display in Legend
-					htParameters['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
+					htParameters['displayInLegend'] = isTrue(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
 					
 					if ( htParameters['displayInLegend'] ) { hasDisplayInLegend = true; }
 					
@@ -464,40 +498,40 @@
 					layers[index] = new OpenLayers.Layer.Vector(parameters[layersNames[index] + '.name'], htParameters);
 					
 					// add some events for selectables layers
-					if (jQuery.inArray(value, selectableLayersNames) != -1) {
+					if (selectableLayersNames.indexOf(value) != -1) {
 						selectableLayers.push(layers[index]);
 						var attributesToRetrieve = parameters[layersNames[index] + '.selectable.attributesToRetrieve'].split(",");
-						$.each(attributesToRetrieve, function(key, value){
+						each(attributesToRetrieve, function(key, value){
 							selectedFeatureIds[value] = new Array();
 						});
 						layers[index].events.on({
 							'featureselected': function(feature){
 								var selectedFeature = this.selectedFeatures;
 								var selectedFeatureNb;
-								$.each(this.selectedFeatures, function(index){
-									$.each(attributesToRetrieve, function(key, attrToRetrieve){
+								each(this.selectedFeatures, function(index){
+									each(attributesToRetrieve, function(key, attrToRetrieve){
 										selectedFeatureIds[attrToRetrieve].push(selectedFeature[index].attributes[attrToRetrieve]);
 										selectedFeatureNb = selectedFeatureIds[attrToRetrieve].length;
 									});
 								});
 								
-								if (eval(parameters[layersNames[index] + '.selectable.popup']) && selectedFeatureNb == 1 && (selecthover.active || select.active)) {
+								if (isTrue(parameters[layersNames[index] + '.selectable.popup']) && selectedFeatureNb == 1 && (selecthover.active || select.active)) {
 									openPopup(feature.feature, mapId);
 								}
 								triggerEvent('featureselected');
 							},
 							'featureunselected': function(feature){
-								$.each(attributesToRetrieve, function(key, attrToRetrieve){
+								each(attributesToRetrieve, function(key, attrToRetrieve){
 									selectedFeatureIds[attrToRetrieve].remove(feature.feature.attributes[attrToRetrieve]);
 								});
 								
-								if (eval(parameters[layersNames[index] + '.selectable.popup'])) {
+								if (isTrue(parameters[layersNames[index] + '.selectable.popup'])) {
 									closePopup(feature.feature);
 								}
 								triggerEvent( 'featureunselected');
 							},
 							'featuremodified': function(feature){
-								if(eval(parameters['control.modify'])){
+								if(isTrue(parameters['control.modify'])){
 				 					triggerEvent("featuremodified",feature.feature);
 								}
 							}
@@ -548,19 +582,19 @@
 						// use map bounds
 						htParameters['maxExtent'] = map.maxExtent;
 		                htParameters['useArcGISServer'] = false;
-		                htParameters['isBaseLayer'] = (jQuery.inArray(value, baseLayersNames) == -1) ? false : true;;
+		                htParameters['isBaseLayer'] = (baseLayersNames.indexOf(value) == -1) ? false : true;;
 		                
 	
 						// Display In LayerSwitcher
-						htParameters['displayInLayerSwitcher'] = eval(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
+						htParameters['displayInLayerSwitcher'] = isTrue(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
 						// Display in Legend
-						htParameters['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
+						htParameters['displayInLegend'] = isTrue(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
 						if (parameters[layersNames[index] + '.legendTitle'] != undefined &&
 								parameters[layersNames[index] + '.legendTitle'] != ''){
 							htParameters['legendTitle'] = parameters[layersNames[index] + '.legendTitle'];
 						}
 						// Visibility
-						htParameters['visibility'] = eval(parameters[layersNames[index] + '.visibility']) ? true : false;					
+						htParameters['visibility'] = isTrue(parameters[layersNames[index] + '.visibility']) ? true : false;					
 						// Scale
 						if (parameters[layersNames[index] + '.minScale'] != '') 
 							htParameters['minScale'] = parameters[layersNames[index] + '.minScale'];
@@ -571,7 +605,7 @@
 								parameters[layersNames[index] + '.name'], url, htParameters);
 						
 						// Add an opacity slider if the layer is thematic 
-						if (jQuery.inArray(value, selectableLayersNames) != -1) {
+						if (selectableLayersNames.indexOf(value) != -1) {
 							opacityLayers.push(layers[index]);
 						}
 						// Strictly restrict the map extent to the arcgis extent to avoid navigation "jumps"
@@ -613,7 +647,7 @@
 		                htParameters['maxExtent'] = map.maxExtent;	    
 						// use map projection
 		                htParameters['projection'] = map.projection;
-		                htParameters['isBaseLayer'] = (jQuery.inArray(value, baseLayersNames) == -1) ? false : true;
+		                htParameters['isBaseLayer'] = (baseLayersNames.indexOf(value) == -1) ? false : true;
 						
 		                // Tile origin
 		                if(parameters[layersNames[index] + '.wmts.tileOrigin'] != ''){
@@ -629,15 +663,15 @@
 	                	htParameters['format'] = format;
 		
 						// Display In LayerSwitcher
-						htParameters['displayInLayerSwitcher'] = eval(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
+						htParameters['displayInLayerSwitcher'] = isTrue(parameters[layersNames[index] + '.displayInLayerSwitcher']) ? true : false;
 						// Display in Legend
-						htParameters['displayInLegend'] = eval(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
+						htParameters['displayInLegend'] = isTrue(parameters[layersNames[index] + '.displayInLegend']) ? true : false;
 						if (parameters[layersNames[index] + '.legendTitle'] != undefined &&
 								parameters[layersNames[index] + '.legendTitle'] != ''){
 							htParameters['legendTitle'] = parameters[layersNames[index] + '.legendTitle'];
 						}
 						// Visibility
-						htParameters['visibility'] = eval(parameters[layersNames[index] + '.visibility']) ? true : false;					
+						htParameters['visibility'] = isTrue(parameters[layersNames[index] + '.visibility']) ? true : false;					
 						// Scale
 						if (parameters[layersNames[index] + '.minScale'] != '') 
 							htParameters['minScale'] = parameters[layersNames[index] + '.minScale'];
@@ -648,7 +682,7 @@
 						layers[index] = new OpenLayers.Layer.WMTS(htParameters);
 						
 						// Add an opacity slider if the layer is thematic 
-						if (jQuery.inArray(value, selectableLayersNames) != -1) {
+						if (selectableLayersNames.indexOf(value) != -1) {
 							opacityLayers.push(layers[index]);
 						}
 					}
@@ -665,26 +699,26 @@
 
 		
 // HAL 14/01/2013 - Start
-		if(eval(parameters['mousePosition'])) {
+		if(isTrue(parameters['mousePosition'])) {
  			map.addControl( new OpenLayers.Control.MousePosition() );
 		}
 // HAL 14/01/2013 - End
 		
 		
-		if(eval(parameters['showPanZoomBar'])) {
+		if(isTrue(parameters['showPanZoomBar'])) {
  			map.addControl(new OpenLayers.Control.PanZoomBar({
  				position: new OpenLayers.Pixel(2, 15)
  			}));
 		}
 				
-		if(eval(parameters['navigation'])) {
+		if(isTrue(parameters['navigation'])) {
 			map.addControl(new OpenLayers.Control.Navigation(
 						{mouseWheelOptions: {interval: 800000, cumulative : false},
 						
 					}));
 		}
 		
-		if( eval(parameters['layerSwitcher']) ) {
+		if( isTrue(parameters['layerSwitcher']) ) {
 			map.addControl(new OpenLayers.Control.CustomLayerSwitcher());
 		}
 		
@@ -698,7 +732,7 @@
 		}
 		
 		// Possibly add LayerSearchPanel
-		if (eval(parameters['layerSearchPanel'])) 
+		if (isTrue(parameters['layerSearchPanel'])) 
 		{			
 			var layerSearchPanel = new OpenLayers.Control.LayerSearchPanel();		
 			
@@ -741,7 +775,7 @@
 			geolocalizationPanel.listenLocalisationCleanFeatureEvent();
 			
 			// Possibly add GeolocalizationPanel
-			if (eval(parameters['geolocalizationPanel'])){		
+			if (isTrue(parameters['geolocalizationPanel'])){		
 				map.addControl( geolocalizationPanel );
 			}
 		}
@@ -756,17 +790,17 @@
 			staticGeolocalizationControl.listenCreatePopup();
 		}
 		
-		if(eval(parameters['overviewMap'])) {
+		if(isTrue(parameters['overviewMap'])) {
 			map.addControl(new OpenLayers.Control.OverviewMap());
 		}
 		
-		if(eval(parameters['keyboardNavigation'])) {
+		if(isTrue(parameters['keyboardNavigation'])) {
 			map.addControl(new OpenLayers.Control.KeyboardDefaults());
 		}	
-		if(eval(parameters['legend']) && parameters['layers.thematic'] != '' && hasDisplayInLegend) {
+		if(isTrue(parameters['legend']) && parameters['layers.thematic'] != '' && hasDisplayInLegend) {
 			map.addControl(new OpenLayers.Control.Legend());
 		}	
-		if(eval(parameters['control.scaleLine'])) {
+		if(isTrue(parameters['control.scaleLine'])) {
 			var scaleLine = new OpenLayers.Control.ScaleLine();
 			
 			// Scale needs to be calculated for the SRID 4326
@@ -778,9 +812,6 @@
 		}  		
 		map.zoomToMaxExtent();
 		
-		mapWidth = $("#"+ mapId).width();
-		mapHeight = $("#"+ mapId).height();
-		mapPosition = $("#"+ mapId).position();
 		
 		var fullscreen = new OpenLayers.Control.Button({
 			displayClass: "olControlFullscreen",
@@ -894,7 +925,7 @@
 		var controlList = new Array();
 		
 		// Inverse Geolocalization
-		if(	eval( parameters['control.inverseGeolocalization'] ))
+		if(	isTrue(parameters['control.inverseGeolocalization'] ))
 		{		
 			var inverseGeoButton = new OpenLayers.Control.Button({
 				autoActivate:false,
@@ -915,13 +946,13 @@
 				else 
 				{
 					inverseGeoButton.activate();
-			    	jQuery("body").trigger(jQuery.Event("GisInverseLocalization.activate"));	
+			    	document.body.dispatchEvent(new CustomEvent("GisInverseLocalization.activate"));	
 				}
 				
 			});
 			
 			inverseGeoButton.events.register("deactivate", this, function(e) {
-		    	jQuery("body").trigger(jQuery.Event("GisInverseLocalization.desactive"));	
+		    	document.body.dispatchEvent(new CustomEvent("GisInverseLocalization.desactive"));	
 			});
 			
 			map.events.register("zoomend", this, function(e) {
@@ -935,7 +966,7 @@
 		 
 		// Manages the mouse single click event to get features info from WMS
 		// layers.
-		if(	eval( parameters['control.identify'] ) && 
+		if(	isTrue(parameters['control.identify'] ) && 
 			typeof( identifiableLayer['layers'] ) != 'undefined'
 		) {     
 	        var info = new OpenLayers.Control.WMSGetFeatureInfo({
@@ -983,35 +1014,35 @@
 	        controlList.push(info);
 		}
 
-		if(eval(parameters['control.print'])) {
+		if(isTrue(parameters['control.print'])) {
 			controlList.push(printBtn);
 			
 		}
-		if(eval(parameters['control.fullscreen'])) {
+		if(isTrue(parameters['control.fullscreen'])) {
 			controlList.push(fullscreen);
 		}
-		if(eval(parameters['control.mouse'])) {
+		if(isTrue(parameters['control.mouse'])) {
 			controlList.push(mouse);
 		}
-		if(eval(parameters['control.select'])) {
+		if(isTrue(parameters['control.select'])) {
 			controlList.push(select);
 		}
-		if(eval(parameters['control.selecthover'])) {
+		if(isTrue(parameters['control.selecthover'])) {
 			controlList.push(selecthover);
 		}
-		if(eval(parameters['control.point'])) {
+		if(isTrue(parameters['control.point'])) {
 			controlList.push(point);
 		}
-		if(eval(parameters['control.line'])) {
+		if(isTrue(parameters['control.line'])) {
 			controlList.push(line);
 		}
-		if(eval(parameters['control.polygon'])) {
+		if(isTrue(parameters['control.polygon'])) {
 			controlList.push(polygon);
 		}
-		if(eval(parameters['control.modify'])) {
+		if(isTrue(parameters['control.modify'])) {
 			controlList.push(modifyFeatureControl);
 		}
-		if(eval(parameters['control.delete'])) {
+		if(isTrue(parameters['control.delete'])) {
 			controlList.push(deleteFeatureControl);
 		}
 		
@@ -1020,9 +1051,11 @@
 		 map.addControl(panel); 
 		 
 		 // Post treament for controls
-		 if(eval(parameters['layerSwitcher'])) {
-				$("#baseLbl").html(parameters['layerSwitcher.baseLayer.label']);
-				$("#dataLbl").html(parameters['layerSwitcher.dataLayer.label']);
+		 if(isTrue(parameters['layerSwitcher'])) {
+				var baseLbl = document.getElementById("baseLbl");
+				var dataLbl = document.getElementById("dataLbl");
+				if (baseLbl) { baseLbl.innerHTML = parameters['layerSwitcher.baseLayer.label']; }
+				if (dataLbl) { dataLbl.innerHTML = parameters['layerSwitcher.dataLayer.label']; }
 			}
 
 		// preload images
@@ -1037,20 +1070,9 @@
             }
             
           // Create slider opacity for each thematics layer
-    		$.each(opacityLayers, function(index,value){
-    			var sliderId = "#slider_"+index;
-    			var sliderOpacity = jQuery(sliderId);
+    		each(opacityLayers, function(index,value){
     			opacityLayers[index].setOpacity(0.75);
-    			sliderOpacity.slider({
-    				value:75, 
-    				slide: function(event, ui) {
-	    				if (ui.value != 0) {
-	    					opacityLayers[index].setOpacity(ui.value/100);
-	    				} else {
-	    					opacityLayers[index].setOpacity(0);
-	    				}
-    				}
-    			});
+    			renderOpacitySlider(index, opacityLayers[index]);
     		});
 
 // HAL 15/01/2013 - Start
@@ -1060,32 +1082,16 @@
 // HAL 15/01/2013 - End
     		
     		// Catch Event Redraw
-    		$("body").bind( "Map.redraw", function() {
+    		document.body.addEventListener( "Map.redraw", function() {
     			/*
 				 * Redraw sliders
 				 */
-    			$.each(opacityLayers, function(index,value){
-    				var sliderId = "#slider_"+index;
-    				var sliderOpacity = jQuery(sliderId);
-    				
-    				var currentOpacity = opacityLayers[index].opacity * 100;
-    				
-    				sliderOpacity.slider({
-    					value:currentOpacity, 
-    					slide: function(event, ui) {
-    						if (ui.value != 0) {
-    							opacityLayers[index].setOpacity(ui.value/100);
-    						} else {
-    							opacityLayers[index].setOpacity(0);
-    						}
-    					}
-    				});
+    			each(opacityLayers, function(index,value){
+    				renderOpacitySlider(index, opacityLayers[index]);
     			});
     		});  		
     		// Trigger an event when map is displayed.
-    		$('body').trigger( 
-    				jQuery.Event( 'GisMap.displayComplete',  {} ) 
-    		);
+    		document.body.dispatchEvent(new CustomEvent('GisMap.displayComplete', { detail: {} }));
     }
 /*
  * // preload images (function() { var roots =
@@ -1128,8 +1134,32 @@
 	 * Triggers
 	 */
 	function triggerEvent(name, param){
-		$('body').trigger(name,[param]);
+		document.body.dispatchEvent(new CustomEvent(name, { detail: param }));
 		return param; 
+	}
+
+	/*
+	 * Shows in the element slider_<index> an opacity slider driving the layer
+	 */
+	function renderOpacitySlider(index, layer) {
+		var sliderDiv = document.getElementById("slider_" + index);
+		if (!sliderDiv) {
+			return;
+		}
+		var slider = sliderDiv.querySelector('input[type="range"]');
+		if (!slider) {
+			slider = document.createElement('input');
+			slider.type = 'range';
+			slider.min = '0';
+			slider.max = '100';
+			slider.className = 'form-range gis-opacity-slider';
+			slider.setAttribute('aria-label', layer.name);
+			slider.addEventListener('input', function() {
+				layer.setOpacity(Number(slider.value) / 100);
+			});
+			sliderDiv.appendChild(slider);
+		}
+		slider.value = String(Math.round(layer.opacity * 100));
 	}
 	
 	function onPopupClose(evt) {
@@ -1169,7 +1199,7 @@
 		
 		var styles = new Array();
 		
-		$.each(stylesNames, function(index, value) {
+		each(stylesNames, function(index, value) {
 			var symbolizer = getSymbolizer(globalParameters, parameters, value);
 			styles[value] = new OpenLayers.Style(symbolizer);
 		});
@@ -1179,7 +1209,7 @@
 	function getSymbolizer(globalParameters, parameters, styleName){
 		var htParameters = {};
 		var toto = globalParameters['availableParametersStyles'].split(",");
-		$.each(toto, function(index, value) {
+		each(toto, function(index, value) {
 			if(parameters[styleName + '.' + value] != ""){
 				htParameters[value] = parameters[styleName + '.' + value];
 			}
@@ -1194,11 +1224,11 @@
 	 */
 	function getOGCFilter(stringFilter){
 		try {
-			var jsonFilter = jQuery.parseJSON(stringFilter);
+			var jsonFilter = JSON.parse(stringFilter);
 			if (jsonFilter != null) {
 				if (jsonFilter.logical == undefined) {
 					stringFilter = '{"logical":"AND", "criteria1":' + stringFilter + ',"criteria2":""}';
-					jsonFilter = jQuery.parseJSON(stringFilter);
+					jsonFilter = JSON.parse(stringFilter);
 				}
 				return json2Filter(jsonFilter);
 			}
@@ -1236,9 +1266,9 @@
 					});
 					break;
 			}
-			if ($.trim(jsonFilter.criteria1) != '')
+			if (trim(jsonFilter.criteria1) != '')
 				operator.filters.push(json2Filter(jsonFilter.criteria1));
-			if ($.trim(jsonFilter.criteria2) != '')
+			if (trim(jsonFilter.criteria2) != '')
 				operator.filters.push(json2Filter(jsonFilter.criteria2));
 		}else{
 			var filter = {};
@@ -1246,7 +1276,7 @@
 				var in_filter = new OpenLayers.Filter.Logical({type: OpenLayers.Filter.Logical.OR});
 			
 				var filterValues = jsonFilter.value.split(',');
-				$.each(filterValues, function(key, value) {
+				each(filterValues, function(key, value) {
 					var filter={};
 					filter['type'] = OpenLayers.Filter.Comparison.EQUAL_TO;
 					filter['property'] = jsonFilter.property;
@@ -1292,33 +1322,30 @@
 	}
 	
 	function toggleFullScreen(){ 
-		
+		var mapElement = document.getElementById(mapId);
 		if (maximizedMap) {
-			jQuery("#"+mapId).animate({ left: mapPosition.left+"px", top: mapPosition.top+"px", height:mapHeight+"px", width:mapWidth+"px"  }, 00);
-			jQuery("#"+mapId).css({ position: "relative", left: "0px", top: "0px", 'z-index': '0' });
-			$('html,body').animate({scrollTop: scrollTopValue}, '0', null, function() {
-				// Force refresh in case of missing tiles after maximize.
-				map.updateSize();	
-			});
+			Object.assign(mapElement.style, { position: "relative", left: "", top: "", right: "", bottom: "", height: "", width: "", zIndex: "" });
+			window.scrollTo(0, scrollTopValue);
+			// Force refresh in case of missing tiles after maximize.
+			map.updateSize();
 			maximizedMap=false;
          }
         else { 
 // OBR - Start
-        	scrollTopValue = $(window).scrollTop();
-          	if(jQuery(".navbar-inner")[0] && jQuery("#footer")[0]){
-          		var headerHeight = jQuery(".navbar-inner").height()+10;
-            	var footerHeight = jQuery("#footer").height()+10;
-    	        jQuery("#"+mapId).css({ position:"absolute", left:"10px", right:"10px", top:headerHeight+"px", bottom:footerHeight+"px",  height: "auto", width: "auto" });
-          		jQuery("#"+mapId).animate({'z-index': '100', position:"absolute",left:"10px", right:"10px", top:headerHeight+"px", bottom:footerHeight+"px",  height: "auto", width: "auto" }, 600);
+        	scrollTopValue = window.scrollY;
+        	var header = document.querySelector(".navbar-inner");
+        	var footer = document.getElementById("footer");
+          	if(header && footer){
+          		var headerHeight = header.offsetHeight+10;
+            	var footerHeight = footer.offsetHeight+10;
+    	        Object.assign(mapElement.style, { position: "fixed", left: "10px", right: "10px", top: headerHeight + "px", bottom: footerHeight + "px", height: "auto", width: "auto", zIndex: "1050" });
 	    	}
 	    	else{
-	    		jQuery("#"+mapId).css({ position:"absolute",left: "10px", top: "10px",right:"10px", bottom:"10px",height: "auto", width: "auto" });
-	            jQuery("#"+mapId).animate({'z-index': '100', left: "10px", top: "10px",right:"10px",bottom:"10px",height: "auto", width: "auto"  }, 600);
+	    		Object.assign(mapElement.style, { position: "fixed", left: "10px", top: "10px", right: "10px", bottom: "10px", height: "auto", width: "auto", zIndex: "1050" });
 	    	}
-			$('html,body').animate({scrollTop: 0}, '600', null, function() {
-				// Force refresh in case of missing tiles after maximize.
-				map.updateSize();	
-			});
+			window.scrollTo(0, 0);
+			// Force refresh in case of missing tiles after maximize.
+			map.updateSize();
 			maximizedMap=true;
 // OBR - End
          }        
@@ -1328,4 +1355,4 @@
 		print();	
 	}	
      
-})(jQuery);
+})();
