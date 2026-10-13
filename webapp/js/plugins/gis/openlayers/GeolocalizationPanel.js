@@ -82,11 +82,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	
     	this.setMap(map);
     	
-    	$("body").bind( this.ACTIVE_INVERSE_GEOCODE, 
-    			$.proxy( this.activateInverseGeolocalization, this ) );
+    	document.body.addEventListener( this.ACTIVE_INVERSE_GEOCODE, this.activateInverseGeolocalization.bind( this ) );
     	
-    	$("body").bind( this.DEACTIVE_INVERSE_GEOCODE, 
-    			$.proxy( this.deactivateInverseGeolocalization, this ) );
+    	document.body.addEventListener( this.DEACTIVE_INVERSE_GEOCODE, this.deactivateInverseGeolocalization.bind( this ) );
     },
 
     /**
@@ -152,7 +150,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */     
     addSubmitEvent: function(evt){
     	 OpenLayers.Event.stopObserving(this.div,"mouseover",this.mouseOverObserver);
-	 	 $('.'+this.displayClass+'Form').submit($.proxy(this.getFeatures,this));
+	 	 document.querySelectorAll( '.'+this.displayClass+'Form' ).forEach( function( form ) {
+	 		 form.addEventListener( 'submit', function( e ) { e.preventDefault( ); this.getFeatures( ); }.bind( this ) );
+	 	 }, this );
     },
      
     /**
@@ -180,18 +180,15 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     listenLocalizationDoneEvent: function( event )
     {
-    	$("body").bind("GisLocalization.done", $.proxy( 
+    	document.body.addEventListener("GisLocalization.done", 
     			function ( event ) {
+    				var data = event.detail || {};
     				if( this.searchTextField != null ) {
-    					if( event.inverse ) {
-    						this.searchTextField.value = event.address;
-							//Fixes IE8 issue: text field not refresh after changing 
-							$('.'+this.displayClass+'Field').hide(); 
-							$('.'+this.displayClass+'Field').show();
+    					if( data.inverse ) {
+    						this.searchTextField.value = data.address;
     					}
     				}
-    			},
-    			this)
+    			}.bind( this )
     		);
     },
     
@@ -203,12 +200,11 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     listenLocalisationCleanFeatureEvent : function( event )
     {
-    	$("body").bind("GisLocalization.clean", $.proxy( 
+    	document.body.addEventListener("GisLocalization.clean", 
     			function ( event ) {
     		 		this.map.zoomToMaxExtent();
     				this.cleanFeatures();
-    			},
-    			this)
+    			}.bind( this )
     		);
     },
     
@@ -220,18 +216,16 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     listenLocalizationSendEvent: function( event )
     {
-    	$("body").bind("GisLocalization.send",  
-    			$.proxy( function ( event ) {
-    				this.getGeolocalization ( event.address, this.getSRID() );
-    			},
-    			this)
+    	document.body.addEventListener("GisLocalization.send",  
+    			function ( event ) {
+    				this.getGeolocalization ( ( event.detail || {} ).address, this.getSRID() );
+    			}.bind( this )
     	);
     	
-    	$("body").bind("GisLocalization.send.geolocalize.suggestPOI",  
-    			$.proxy( function ( event ) {
-    				this.drawFeatureOnWithPoi(event.poi);
-    			},
-    			this)
+    	document.body.addEventListener("GisLocalization.send.geolocalize.suggestPOI",  
+    			function ( event ) {
+    				this.drawFeatureOnWithPoi( ( event.detail || {} ).poi );
+    			}.bind( this )
     	);
     },
     
@@ -244,8 +238,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     triggerLocalizationEvent: function( type, data )
     {
-    	var event = jQuery.Event( type, data );  	
-    	jQuery("body").trigger(event);	
+    	document.body.dispatchEvent( new CustomEvent( type, { detail: data } ) );
     },
     
     /**
@@ -311,7 +304,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	// clean map even if no data has been received
     	this.cleanFeatures();    	
     	var address = '', lonLat = '';
-    	data = jQuery.trim(data);
+    	data = String( data == null ? '' : data ).trim( );
     	if ( data.length != 0 ) 
     	{
 	    	if( data.indexOf("/") != -1)
@@ -357,11 +350,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */   
     getGeolocalization: function( address, srid )
     {
-		$.ajax({
-			  url: 'jsp/site/plugins/gis/DoGeolocalization.jsp',
-			  data: {address:address, srid:srid},
-			  success: $.proxy( function ( data ) { this.drawFeatureOnSuccess ( data, false); }, this )
-		});
+		fetch( 'jsp/site/plugins/gis/DoGeolocalization.jsp?' + new URLSearchParams( { address: address, srid: srid } ) )
+			.then( function ( response ) { return response.ok ? response.text( ) : Promise.reject( response.status ); } )
+			.then( function ( data ) { this.drawFeatureOnSuccess ( data, false ); }.bind( this ) );
     },
     
     /**
@@ -370,12 +361,12 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     getFeatures: function() {
 
-    	var addressFieldValue = $.trim($('.'+this.displayClass+'Field').val());	
+    	var addressField = document.querySelector( '.'+this.displayClass+'Field' );
+    	var addressFieldValue = addressField ? addressField.value.trim( ) : '';
 
     	if( addressFieldValue!= "" ){ 
     		//this.getGeolocalization( addressFieldValue, this.getSRID() ); 
-    		var event =  jQuery.Event( 'GisLocalization.send',  { 'address': addressFieldValue } );
-    		$('body').trigger(event);
+    		document.body.dispatchEvent( new CustomEvent( 'GisLocalization.send', { detail: { 'address': addressFieldValue } } ) );
     		this.geolocalizationCall = true;
     	}
 
@@ -401,11 +392,9 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
     	var lonLat = this.map.getLonLatFromPixel(evt.xy);
     	var srid = this.map.getProjectionObject().getCode();
     	srid = srid.substring(srid.indexOf(':')+1, srid.length);
-    	$.ajax({
-    			url: 'jsp/site/plugins/gis/DoInverseGeolocalization.jsp',
-    			data: {x:lonLat.lon.toString(), y:lonLat.lat.toString(), srid:srid},
-    			success: $.proxy( function ( data ) { this.drawFeatureOnSuccess ( data, true); }, this )
-    	});    	
+    	fetch( 'jsp/site/plugins/gis/DoInverseGeolocalization.jsp?' + new URLSearchParams( { x: lonLat.lon.toString( ), y: lonLat.lat.toString( ), srid: srid } ) )
+    		.then( function ( response ) { return response.ok ? response.text( ) : Promise.reject( response.status ); } )
+    		.then( function ( data ) { this.drawFeatureOnSuccess ( data, true ); }.bind( this ) );
     	return false;
     },
 

@@ -37,11 +37,11 @@ import fr.paris.lutece.plugins.gis.business.View;
 import fr.paris.lutece.plugins.gis.business.ViewHome;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
 import fr.paris.lutece.portal.service.util.AppPathService;
-import fr.paris.lutece.util.html.HtmlTemplate;
 
 import java.util.HashMap;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.servlet.http.HttpServletRequest;
 
 
 /**
@@ -49,36 +49,17 @@ import javax.servlet.http.HttpServletRequest;
  * GisService
  *
  */
+@ApplicationScoped
 public class GisService
 {
+    public static final String PLUGIN_NAME = "gis";
+
     // Markers
     private static final String MARK_VIEW = "view";
     private static final String BASE_URL = "base_url";
     private static final String MAP_NAME = "map_name";
     private static final String VIEW_NAME = "view_name";
 
-    //Templates
-    private static GisService _singleton = new GisService(  );
-
-    /**
-     * Initialize the GIS service
-     *
-     */
-    public void init(  )
-    {
-        //TODO
-    }
-
-    /**
-     * Returns the instance of the singleton
-     *
-     * @return The instance of the singleton
-     */
-    public static GisService getInstance(  )
-    {
-        return _singleton;
-    }
-    
     /**
      * Gets the XPage view based on the given GIS code.
      * 

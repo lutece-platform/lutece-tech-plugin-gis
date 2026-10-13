@@ -54,12 +54,11 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     listenLocalisationCleanFeatureEvent : function( event )
     {
-    	$("body").bind("GisLocalization.clean", $.proxy( 
+    	document.body.addEventListener("GisLocalization.clean", 
     			function ( event ) {
     		 		this.map.zoomToMaxExtent();
     				this.cleanFeatures();
-    			},
-    			this)
+    			}.bind( this )
     		);
     },
     
@@ -70,11 +69,10 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 	 * event <Event>
      */
     listenActivatePopup : function( event ) {
-    	$("body").bind("GisLocalization.activatePopup", $.proxy( 
+    	document.body.addEventListener("GisLocalization.activatePopup", 
     			function ( event ) {
     				this.activatePopup();
-    			},
-    			this)
+    			}.bind( this )
     		);
     },
     
@@ -85,11 +83,10 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
 	 * event <Event>
      */
     listenCreatePopup : function( event ) {
-    	$("body").bind("GisLocalization.createPopup", $.proxy( 
+    	document.body.addEventListener("GisLocalization.createPopup", 
     			function ( event ) {
-    				this.createPopup(event.feature);
-    			},
-    			this)
+    				this.createPopup( ( event.detail || {} ).feature );
+    			}.bind( this )
     		);
     },
     
@@ -101,14 +98,14 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     listenAddFeatureEvent : function( event )
     {
-    	$("body").bind("GisLocalization.addFeature", $.proxy( 
+    	document.body.addEventListener("GisLocalization.addFeature", 
     			function ( event ) {
-    		    	var lonLat = this.getLonLatFromPoi(event.poi);
+    				var data = event.detail || {};
+    		    	var lonLat = this.getLonLatFromPoi(data.poi);
     		    	// add the feature on the layer
-    		    	this.addFeatureWithPopup(lonLat, event.label);
+    		    	this.addFeatureWithPopup(lonLat, data.label);
     		    	this.activatePopup();
-    			},
-    			this)
+    			}.bind( this )
     		);
     },
     
@@ -120,11 +117,10 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
      */
     listenLocalizationSendEvent: function( event )
     {
-    	$("body").bind("GisLocalization.send.POI",  
-    			$.proxy( function ( event ) {
-    				this.drawFeatureOnWithPoi(event.poi);
-    			},
-    			this)
+    	document.body.addEventListener("GisLocalization.send.POI",  
+    			function ( event ) {
+    				this.drawFeatureOnWithPoi( ( event.detail || {} ).poi );
+    			}.bind( this )
     	);
     },
     
@@ -311,11 +307,7 @@ OpenLayers.Class(OpenLayers.Control.LayerSwitcher,{
  * feature - the feature of the popup to open
  */
 function createPopup(feature) {
-	$("body").trigger(
-		jQuery.Event("GisLocalization.createPopup", {
-			feature: feature
-			})
-	);
+	document.body.dispatchEvent( new CustomEvent( "GisLocalization.createPopup", { detail: { feature: feature } } ) );
 }
 
 /**

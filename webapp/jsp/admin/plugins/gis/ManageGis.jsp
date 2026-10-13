@@ -1,9 +1,9 @@
 <%@ page errorPage="../../ErrorPage.jsp" %>
+
+${ pageContext.setAttribute( 'strContent', gisJspBean.processController( pageContext.request , pageContext.response ) ) }
+
 <jsp:include page="../../AdminHeader.jsp" />
 
-<jsp:useBean id="gis" scope="session" class="fr.paris.lutece.plugins.gis.web.GisJspBean" />
-
-<% gis.init( request , gis.RIGHT_MANAGE_GIS ); %>
-<%= gis.getManageGis(request) %>
+${ pageContext.getAttribute( 'strContent' ) }
 
 <%@ include file="../../AdminFooter.jsp" %>

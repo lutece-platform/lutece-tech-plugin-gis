@@ -31,24 +31,44 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.gis.service;
+package fr.paris.lutece.plugins.gis.web;
 
-import fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation;
+import fr.paris.lutece.plugins.gis.service.GisService;
+import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
+import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
+import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
- * class GisPlugin
+ * Back office map fragment of a GIS view.
  */
-public class GisPlugin extends PluginDefaultImplementation
+@RequestScoped
+@Named
+@Controller( controllerJsp = "DoDisplayMap.jsp", controllerPath = "jsp/admin/plugins/gis/", right = GisJspBean.RIGHT_DISPLAY_MAP, securityTokenEnabled = true )
+public class GisMapJspBean extends MVCAdminJspBean
 {
-    public static final String PLUGIN_NAME = "gis";
+    private static final long serialVersionUID = 1L;
+
+    private static final String PARAMETER_GIS_CODE = "gis_code";
+    private static final String VIEW_DISPLAY_MAP = "displayMap";
+
+    @Inject
+    private transient GisService _gisService;
 
     /**
-     * Initialize the plugin gis
+     * Returns the map fragment of the view named by the gis_code parameter.
+     *
+     * @param request
+     *            the request
+     * @return the map fragment, or null when the code is unknown
      */
-    public void init(  )
+    @View( value = VIEW_DISPLAY_MAP, defaultView = true )
+    public String getMap( HttpServletRequest request )
     {
-        // Initialize the Gis service
-        GisService.getInstance(  ).init(  );
+        return _gisService.getView( request.getParameter( PARAMETER_GIS_CODE ), null, request );
     }
 }
